@@ -162,7 +162,7 @@ void ClearCodeInjection()
 
 GLuint InitShader(const std::string& computeShaderFile)
 {
-   Shader shaders = { computeShaderFile, GL_COMPUTE_SHADER, "", -1 };
+   Shader shaders = { computeShaderFile, GL_COMPUTE_SHADER, "", (GLuint)-1 };
    
    GLuint program = glCreateProgram();
 
@@ -211,11 +211,11 @@ GLuint InitShader(const std::string& vertexShaderFile, const std::string& tessCo
    const int NUM_FILES = 5;
    Shader shaders[NUM_FILES] =
    {
-      { vertexShaderFile, GL_VERTEX_SHADER, "", -1},
-      { tessControlShaderFile, GL_TESS_CONTROL_SHADER, "", -1},
-      { tessEvalShaderFile, GL_TESS_EVALUATION_SHADER, "", -1},
-      { geometryShaderFile, GL_GEOMETRY_SHADER, "", -1},
-      { fragmentShaderFile, GL_FRAGMENT_SHADER, "", -1}
+      { vertexShaderFile, GL_VERTEX_SHADER, "", (GLuint)-1},
+      { tessControlShaderFile, GL_TESS_CONTROL_SHADER, "", (GLuint)-1},
+      { tessEvalShaderFile, GL_TESS_EVALUATION_SHADER, "", (GLuint)-1},
+      { geometryShaderFile, GL_GEOMETRY_SHADER, "", (GLuint)-1},
+      { fragmentShaderFile, GL_FRAGMENT_SHADER, "", (GLuint)-1}
    };
 
    GLuint program = glCreateProgram();

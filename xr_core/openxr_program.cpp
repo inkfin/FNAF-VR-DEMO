@@ -841,7 +841,7 @@ struct OpenXrProgram : IOpenXrProgram {
                 CHECK_XRCMD(xrEnumerateSwapchainImages(swapchain.handle, imageCount, &imageCount, swapchainImages[0]));
 
                 m_swapchainImages.insert(std::make_pair(swapchain.handle, std::move(swapchainImages)));
-                int size[2] = { swapchainCreateInfo.width, swapchainCreateInfo.height };
+                int size[2] = { static_cast<int>(swapchainCreateInfo.width), static_cast<int>(swapchainCreateInfo.height) };
                 XrCallbacks::ResizeViewEvent(i, size);
             }
         }

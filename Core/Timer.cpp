@@ -112,7 +112,7 @@ long double GpuTimer::Stop()
     glGetQueryObjectui64v(mQuery[0], GL_QUERY_RESULT, &startTime);
     glGetQueryObjectui64v(mQuery[1], GL_QUERY_RESULT, &stopTime);
 
-    mLastTimeMs = long double(stopTime - startTime) / 1000000.0;
+    mLastTimeMs = (long double)(stopTime - startTime) / 1000000.0;
     long double time_elapsed_s = mLastTimeMs / 1000.0;
 
     if (mPrint) std::cout << mName << " stop " << time_elapsed_s << " s " << "(" << mLastTimeMs << "ms)" << std::endl;
@@ -198,7 +198,7 @@ long double DoubleBufferedGpuTimer::Stop()
    glGetQueryObjectui64v(mEndQuery[1], GL_QUERY_RESULT, &stopTime);
    SwapBuffers();
 
-   mLastTimeMs = long double(stopTime - startTime) / 1000000.0;
+   mLastTimeMs = (long double)(stopTime - startTime) / 1000000.0;
    long double time_elapsed_s = mLastTimeMs / 1000.0;
 
    if (mPrint) std::cout << mName << " stop " << time_elapsed_s << " s " << "(" << mLastTimeMs << "ms)" << std::endl;
