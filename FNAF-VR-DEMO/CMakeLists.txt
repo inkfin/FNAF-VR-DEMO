@@ -10,6 +10,13 @@ endif()
 
 add_definitions(-DPROJECT_NAME="${PROJECT_NAME}")
 
+if (MSVC)
+    # Static library
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+endif(MSVC)
+
+
 add_definitions(-DXR_USE_GRAPHICS_API_OPENGL
                 -DXR_USE_PLATFORM_WIN32
                 -D_CONSOLE
@@ -20,20 +27,30 @@ file(GLOB IMGUI_SRC ../imgui-master/*.cpp
                     ../imgui-master/backends/imgui_impl_glfw.cpp
                     ../imgui-master/backends/imgui_impl_opengl3.cpp
 )
+
 file(GLOB IMPLOT_SRC ../implot-master/*.cpp
-                     ../implot-master/*.h)
+                     ../implot-master/*.h
+)
 
 file(GLOB XR_COMMON_SRC ../xr_common/*.c
                         ../xr_common/*.h
-                        ../xr_common/*.cpp)
+                        ../xr_common/*.cpp
+)
+
 file(GLOB XR_CORE_SRC   ../xr_core/*.c
                         ../xr_core/*.h
-                        ../xr_core/*.cpp)
-file(GLOB CORE_SRC      ../Core/*.c
-                        ../Core/*.h
-                        ../Core/*.cpp)
+                        ../xr_core/*.cpp
+)
+
+file(GLOB CORE_SRC      ../Core/AttriblessRendering.cpp
+                        ../Core/InitShader.cpp
+                        ../Core/LoadMesh.cpp
+                        ../Core/LoadTexture.cpp
+)
+
 file(GLOB LIBZIP_SRC    ../include/libzip/*.c
-                        ../include/libzip/*.h)
+                        ../include/libzip/*.h
+)
 
 file(GLOB_RECURSE SOURCE CONFIGURE_DEPENDS
     "./*.h"
@@ -103,12 +120,17 @@ message(STATUS "Set binary output directory to ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
     COMMENT "Copy assets to binary directory" VERBATIM
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:${PROJECT_NAME}>/shaders
+    ${CMAKE_CURRENT_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:${PROJECT_NAME}>/shaders
     COMMENT "Copy shaders to binary directory" VERBATIM
+)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${CMAKE_SOURCE_DIR}/lib/${CMAKE_BUILD_TYPE}/FreeImage.dll $<TARGET_FILE_DIR:${PROJECT_NAME}>/FreeImage.dll
 )

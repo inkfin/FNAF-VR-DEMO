@@ -28,12 +28,6 @@ if (NOT MSVC)
     endif()
 endif()
 
-if (MSVC)
-    # Static library
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
-endif(MSVC)
-
 
 add_subdirectory(FNAF-VR-DEMO)
 
