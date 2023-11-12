@@ -35,8 +35,6 @@ file(GLOB CORE_SRC      ../Core/*.c
 file(GLOB LIBZIP_SRC    ../include/libzip/*.c
                         ../include/libzip/*.h)
 
-message(STATUS "LIBZIP_SRC: ${LIBZIP_SRC}")
-
 file(GLOB_RECURSE SOURCE CONFIGURE_DEPENDS
     "./*.h"
     "./*.cpp"
@@ -64,19 +62,29 @@ target_include_directories(${PROJECT_NAME} PUBLIC . ..
                                                 ../Core
 )
 
-if (CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_link_directories(${PROJECT_NAME} PUBLIC ../lib/Release)
-else()
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     target_link_directories(${PROJECT_NAME} PUBLIC ../lib/Debug)
-endif()
 
-target_link_libraries(${PROJECT_NAME} PUBLIC FreeImage.lib
-                                            assimp-vc143-mt.lib
-                                            glfw3.lib
-                                            glew32.lib
-                                            openxr-gfxwrapper.lib
-                                            openxr_loaderd.lib
-                                            opengl32.lib)
+    target_link_libraries(${PROJECT_NAME} PUBLIC FreeImage.lib
+                                                assimp-vc143-mt.lib
+                                                glfw3.lib
+                                                glew32.lib
+                                                openxr-gfxwrapper.lib
+                                                openxr_loaderd.lib
+                                                opengl32.lib)
+elseif(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    target_link_directories(${PROJECT_NAME} PUBLIC ../lib/Release)
+
+    target_link_libraries(${PROJECT_NAME} PUBLIC
+                                        FreeImage.lib
+                                        assimp-vc143-mt.lib
+                                        glfw3.lib
+                                        glew32.lib
+                                        openxr-gfxwrapper.lib
+                                        openxr_loader.lib
+                                        opengl32.lib
+    )
+endif()
 
 
 # 设置输出目录

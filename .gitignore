@@ -399,3 +399,6 @@ FodyWeavers.xsd
 
 *[Bb]uild*
 info.txt
+
+compile_commands.json
+assets
