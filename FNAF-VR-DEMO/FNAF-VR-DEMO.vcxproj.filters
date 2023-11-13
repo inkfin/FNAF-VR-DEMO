@@ -117,6 +117,12 @@
     <ClInclude Include="XrCallbacks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Core\MeshBase.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GlfwCallbacks.cpp">
@@ -209,12 +215,18 @@
     <ClCompile Include="XrCallbacks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\MeshBase.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\template_fs.glsl">
+    <None Include="shaders\template.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shaders\template_vs.glsl">
+    <None Include="shaders\template.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

@@ -43,11 +43,10 @@ struct MeshData
 
 };
 
-
-
 MeshData LoadMesh(const std::string& pFile);
 bool ValidMeshFilename(const std::string& fname);
 void SetMeshDir(std::string dir);
 std::string GetMeshDir();
+
 
 #endif

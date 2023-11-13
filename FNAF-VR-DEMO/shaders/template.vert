@@ -25,8 +25,8 @@ void main(void)
 {
 	gl_Position = PV*M*vec4(pos_attrib, 1.0); //transform vertices and send result into pipeline
 	
-   //Use dot notation to access members of the interface block
-   outData.tex_coord = tex_coord_attrib;           //send tex_coord to fragment shader
-   outData.pw = vec3(M*vec4(pos_attrib, 1.0));		//world-space vertex position
+	//Use dot notation to access members of the interface block
+	outData.tex_coord = tex_coord_attrib;           //send tex_coord to fragment shader
+	outData.pw = vec3(M*vec4(pos_attrib, 1.0));		//world-space vertex position
 	outData.nw = vec3(M*vec4(normal_attrib, 0.0));	//world-space normal vector
 }

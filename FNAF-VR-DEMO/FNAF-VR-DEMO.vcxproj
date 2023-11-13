@@ -151,6 +151,7 @@
     <ClInclude Include="..\Core\InitShader.h" />
     <ClInclude Include="..\Core\LoadMesh.h" />
     <ClInclude Include="..\Core\LoadTexture.h" />
+    <ClInclude Include="..\Core\MeshBase.h" />
     <ClInclude Include="..\imgui-master\backends\imgui_impl_glfw.h" />
     <ClInclude Include="..\imgui-master\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="..\imgui-master\imconfig.h" />
@@ -172,6 +173,7 @@
     <ClInclude Include="..\xr_core\platformdata.h" />
     <ClInclude Include="..\xr_core\platformplugin.h" />
     <ClInclude Include="DrawGui.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="GlfwWindow.h" />
     <ClInclude Include="GlfwCallbacks.h" />
     <ClInclude Include="XrCallbacks.h" />
@@ -182,6 +184,7 @@
     <ClCompile Include="..\Core\InitShader.cpp" />
     <ClCompile Include="..\Core\LoadMesh.cpp" />
     <ClCompile Include="..\Core\LoadTexture.cpp" />
+    <ClCompile Include="..\Core\MeshBase.cpp" />
     <ClCompile Include="..\imgui-master\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="..\imgui-master\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\imgui-master\imgui.cpp" />
@@ -204,14 +207,15 @@
     <ClCompile Include="..\xr_core\platformplugin_posix.cpp" />
     <ClCompile Include="..\xr_core\platformplugin_win32.cpp" />
     <ClCompile Include="DrawGui.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="GlfwCallbacks.cpp" />
     <ClCompile Include="GlfwWindow.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="XrCallbacks.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\template_fs.glsl" />
-    <None Include="shaders\template_vs.glsl" />
+    <None Include="shaders\template.frag" />
+    <None Include="shaders\template.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
