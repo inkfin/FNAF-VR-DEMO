@@ -13,27 +13,33 @@
 //#include "LoadMesh.h" //Functions for creating OpenGL buffers from mesh files
 #include "LoadTexture.h" //Functions for creating OpenGL textures from image files
 #include "MeshBase.h"
+#include "SkinnedMesh.h"
 
 namespace Scene {
 bool CaptureGui = true;
 bool RecordingBuffer = false;
 bool ClearDefaultFb = true;
 std::string ShaderDir = "shaders/";
-std::string MeshDir = "assets/";
-std::string TextureDir = "assets/";
+//std::string MeshDir = "assets/";
+//std::string TextureDir = "assets/";
 
 static const std::string vertex_shader("template.vert");
 static const std::string fragment_shader("template.frag");
 GLuint shader_program = -1;
 
-static const std::string mesh_name = "Amago0.obj";
-static const std::string texture_name = "AmagoT.bmp";
+static const std::string mesh_name = "assets/Amago0.obj";
+static const std::string texture_name = "assets/AmagoT.bmp";
 
-static const std::string map_name = "Map\\Scene.dae";
+
+static const std::string skinned_vertex_shader("skinning.vert");
+static const std::string skinned_fragment_shader("skinning.frag");
+GLuint skinned_shader_program = -1;
+static const std::string map_name = "assets/Map/Scene.dae";
 
 GLuint texture_id = -1; // Texture map for mesh
 //MeshData mesh_data;
 std::shared_ptr<MeshBase> mesh;
+std::shared_ptr<SkinnedMesh> skinned_mesh;
 
 float angle = 0.0f;
 float scale = 1.0f;
@@ -44,10 +50,13 @@ float Trigger[2] = { 0.0f, 0.0f };
 
 // This structure mirrors the uniform block declared in the shader
 struct SceneUniforms {
-    glm::mat4 P;
-    glm::mat4 V;
+    glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, GlfwWindow::Aspect, 0.1f, 100.0f);
+    glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 PV; // camera projection * view matrix
-    glm::vec4 eye_w; // world-space eye position
+    glm::vec4 eye_w = glm::vec4(0.0f, 0.0f, 3.0f, 1.0f); // world-space eye position
+    glm::mat4 translation = glm::translate(glm::vec3(0.0f, 0.f, 3.0f));
+    float rotation_angle = 135.f;
+    glm::vec3 initial_location = glm::vec3(4.29809f, -5.f, -29.f);
 } SceneData;
 
 struct LightUniforms {
@@ -90,8 +99,13 @@ void UpdateP()
 {
 }
 
-void UpdateV()
+void UpdateV(glm::vec3 delta_pos)
 {
+    glm::mat4 rotation = glm::inverse(Scene::SceneData.V);
+    rotation[3][0] = rotation[3][1] = rotation[3][2] = 0.f;
+    delta_pos = (glm::vec3)(rotation * glm::vec4(delta_pos, 0.f));
+    Scene::SceneData.translation *= glm::translate(delta_pos);
+    std::cout << "Scene::SceneData.translation: " << Scene::SceneData.translation[3][0] << ", " << Scene::SceneData.translation[3][1] << ", " << Scene::SceneData.translation[3][2] << "" << std::endl;
 }
 };
 
@@ -106,11 +120,11 @@ void Scene::Display(GLFWwindow* window)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    SceneData.eye_w = glm::vec4(0.0f, 0.0f, 3.0f, 1.0f);
+    //SceneData.eye_w = glm::vec4(0.0f, 0.0f, 3.0f, 1.0f);
     glm::mat4 M = glm::rotate(angle, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(scale * mesh->mScaleFactor);
-    SceneData.V = glm::lookAt(glm::vec3(SceneData.eye_w), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    SceneData.P = glm::perspective(glm::pi<float>() / 4.0f, GlfwWindow::Aspect, 0.1f, 100.0f);
-    SceneData.PV = SceneData.P * SceneData.V;
+    //SceneData.V = glm::lookAt(glm::vec3(SceneData.eye_w), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    //SceneData.P = glm::perspective(glm::pi<float>() / 4.0f, GlfwWindow::Aspect, 0.1f, 100.0f);
+    //SceneData.PV = SceneData.P * SceneData.V;
 
     glUseProgram(shader_program);
 
@@ -125,6 +139,15 @@ void Scene::Display(GLFWwindow* window)
     glUniformMatrix4fv(UniformLocs::M, 1, false, glm::value_ptr(M));
     glDrawElements(GL_TRIANGLES, mesh->mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
 
+    glUseProgram(skinned_shader_program);
+
+    glm::mat4 RS = glm::rotate(SceneData.rotation_angle, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::vec3(1.f, -1.f, 1.f));
+    glm::mat4 M2 = glm::translate(SceneData.initial_location) * RS;
+    
+    glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program, "PV"), 1, false, glm::value_ptr(SceneData.PV));
+    glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program, "M"), 1, false, glm::value_ptr(M2));
+    skinned_mesh->Render();
+
     // Swap front and back buffers
     glfwSwapBuffers(window);
 }
@@ -135,8 +158,11 @@ void Scene::DisplayVr(const glm::mat4& P, const glm::mat4& V)
 
     glm::mat4 M = glm::rotate(angle, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(scale * mesh->mScaleFactor);
     SceneData.P = P;
-    SceneData.V = V;
-    SceneData.PV = P * V;
+    
+    glm::mat4 rotation = glm::inverse(V);
+    rotation[3][0] = rotation[3][1] = rotation[3][2] = 0.f;
+    SceneData.V = V * Scene::SceneData.translation;
+    SceneData.PV = SceneData.P * SceneData.V;
 
     glUseProgram(shader_program);
 
@@ -159,6 +185,14 @@ void Scene::DisplayVr(const glm::mat4& P, const glm::mat4& V)
         glDrawElements(GL_TRIANGLES, mesh->mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
     }
 
+    glUseProgram(skinned_shader_program);
+
+    glm::mat4 RS = glm::rotate(SceneData.rotation_angle, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::vec3(1.f, -1.f, 1.f));
+    glm::mat4 M2 = glm::translate(SceneData.initial_location) * RS;
+    glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program, "PV"), 1, false, glm::value_ptr(SceneData.PV));
+    glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program, "M"), 1, false, glm::value_ptr(M2));
+    skinned_mesh->Render();
+    
     // No swap buffers in this function
 }
 
@@ -181,13 +215,16 @@ void Scene::Idle()
 
     prev_time_sec = time_sec;
     time_passed += dt;
+
+    skinned_mesh->Update(time_sec);
+    glUniform1f(glGetUniformLocation(skinned_shader_program, "time"), time_sec);
 }
 
 void Scene::Init()
 {
     SetShaderDir(ShaderDir);
     //SetMeshDir(MeshDir);
-    SetTextureDir(TextureDir);
+    //SetTextureDir(TextureDir);
 
 #pragma region OpenGL initial state
     // glClearColor(SceneData.clear_color.r, SceneData.clear_color.g, SceneData.clear_color.b, SceneData.clear_color.a);
@@ -213,7 +250,7 @@ void Scene::Init()
     ClearDefaultFb = false;
 
     //mesh_data = LoadMesh(mesh_name);
-    mesh = std::make_shared<MeshBase>(MeshDir + mesh_name);
+    mesh = std::make_shared<MeshBase>(mesh_name);
     texture_id = LoadTexture(texture_name);
     shader_program = InitShader(vertex_shader.c_str(), fragment_shader.c_str());
 
@@ -234,6 +271,10 @@ void Scene::Init()
     glBindBufferBase(GL_UNIFORM_BUFFER, UboBinding::material, material_ubo); // Associate this uniform buffer with the uniform block in the shader that has the same binding.
 
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    skinned_shader_program = InitShader(skinned_vertex_shader.c_str(), skinned_fragment_shader.c_str());
+    skinned_mesh = std::make_shared<SkinnedMesh>();
+    skinned_mesh->LoadMesh(map_name);
 
     // glGetIntegerv(GL_VIEWPORT, &SceneData.Viewport[0]);
     // Camera::UpdateV();

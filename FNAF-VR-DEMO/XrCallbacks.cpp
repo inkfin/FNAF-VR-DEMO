@@ -72,7 +72,16 @@ void XrCallbacks::TrackpadTouchEvent(int hand, bool click)
 
 void XrCallbacks::TrackpadXYEvent(int hand, const glm::vec2& p)
 {
-
+	// 0 for left hand, 1 for right hand
+	if (hand == 0)
+	{
+        glm::vec3 delta_pos = glm::vec3(0.0f, -p.y, 0.f);
+        Camera::UpdateV(delta_pos);
+	} 
+	else {
+        glm::vec3 delta_pos = glm::vec3(-p.x, 0.f, p.y);
+        Camera::UpdateV(delta_pos);
+	}
 }
 
 void XrCallbacks::ResizeViewEvent(int view, int size[2])

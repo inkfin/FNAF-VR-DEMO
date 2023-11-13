@@ -3,11 +3,13 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include "xr_common/xr_linear.h"
+#include "ImGui.h"
+#include <iostream>
 
 namespace Camera {
 
 void UpdateP();
-void UpdateV();
+void UpdateV(glm::vec3 delta_pos);
 
 }
 

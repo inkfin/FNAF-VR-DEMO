@@ -76,7 +76,7 @@ public:
 
     virtual bool LoadMesh(const std::string& filename, // absolute path to mesh
         const bool normalScale = true, // scaled by its maximum bounding box
-        const unsigned int flags = aiProcessPreset_TargetRealtime_Quality | aiProcess_PreTransformVertices | aiProcess_Triangulate // load flags
+        const unsigned int flags = aiProcessPreset_TargetRealtime_Quality | aiProcess_PreTransformVertices | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs // load flags
     );
     void DrawMesh() const;
 

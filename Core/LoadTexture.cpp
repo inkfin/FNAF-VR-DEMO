@@ -3,17 +3,17 @@
 #include <glm/glm.hpp>
 #include <iostream>
 
-static std::string TextureDir = "";
-void SetTextureDir(std::string dir)
-{
-   TextureDir = dir;
-}
+//static std::string TextureDir = "";
+//void SetTextureDir(std::string dir)
+//{
+//   TextureDir = dir;
+//}
 
-std::string GetTextureDir() { return TextureDir; }
+//std::string GetTextureDir() { return TextureDir; }
 
 bool ValidTextureFilename(const std::string& fname0)
 {
-   std::string fname = TextureDir+fname0;
+   std::string fname = fname0;
    FREE_IMAGE_FORMAT fmt = FreeImage_GetFileType(fname.c_str(), 0);
    if (fmt == FIF_UNKNOWN)
    {
@@ -24,7 +24,7 @@ bool ValidTextureFilename(const std::string& fname0)
 
 GLuint LoadTexture(const std::string& fname0)
 {
-   std::string fname = TextureDir + fname0;
+   std::string fname = fname0;
 
    GLuint tex_id=-1;
 
@@ -69,7 +69,8 @@ GLuint LoadTexture(const std::string& fname0)
 // 0X00
 GLuint LoadSkybox(const std::string& fname0)
 {
-   std::string fname = TextureDir + fname0;
+   //std::string fname = TextureDir + fname0;
+   std::string fname = fname0;
    GLuint tex_id;
 
    FIBITMAP* tempImg = FreeImage_Load(FreeImage_GetFileType(fname.c_str(), 0), fname.c_str());

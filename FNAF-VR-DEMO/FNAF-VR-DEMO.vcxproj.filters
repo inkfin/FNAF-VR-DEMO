@@ -123,6 +123,9 @@
     <ClInclude Include="..\Core\MeshBase.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="SkinnedMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GlfwCallbacks.cpp">
@@ -221,12 +224,21 @@
     <ClCompile Include="..\Core\MeshBase.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="SkinnedMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\template.frag">
       <Filter>shaders</Filter>
     </None>
     <None Include="shaders\template.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\skinning.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\skinning.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

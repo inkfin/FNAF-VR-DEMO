@@ -176,6 +176,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GlfwWindow.h" />
     <ClInclude Include="GlfwCallbacks.h" />
+    <ClInclude Include="SkinnedMesh.h" />
     <ClInclude Include="XrCallbacks.h" />
     <ClInclude Include="Scene.h" />
   </ItemGroup>
@@ -211,9 +212,12 @@
     <ClCompile Include="GlfwCallbacks.cpp" />
     <ClCompile Include="GlfwWindow.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SkinnedMesh.cpp" />
     <ClCompile Include="XrCallbacks.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\skinning.frag" />
+    <None Include="shaders\skinning.vert" />
     <None Include="shaders\template.frag" />
     <None Include="shaders\template.vert" />
   </ItemGroup>
