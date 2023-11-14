@@ -148,10 +148,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Core\AttriblessRendering.h" />
+    <ClInclude Include="..\Core\GlEnumToString.h" />
     <ClInclude Include="..\Core\InitShader.h" />
     <ClInclude Include="..\Core\LoadMesh.h" />
     <ClInclude Include="..\Core\LoadTexture.h" />
     <ClInclude Include="..\Core\MeshBase.h" />
+    <ClInclude Include="..\Core\Shader.h" />
+    <ClInclude Include="..\Core\UniformGui.h" />
     <ClInclude Include="..\imgui-master\backends\imgui_impl_glfw.h" />
     <ClInclude Include="..\imgui-master\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="..\imgui-master\imconfig.h" />
@@ -182,10 +185,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Core\AttriblessRendering.cpp" />
+    <ClCompile Include="..\Core\GlEnumToString.cpp" />
     <ClCompile Include="..\Core\InitShader.cpp" />
     <ClCompile Include="..\Core\LoadMesh.cpp" />
     <ClCompile Include="..\Core\LoadTexture.cpp" />
     <ClCompile Include="..\Core\MeshBase.cpp" />
+    <ClCompile Include="..\Core\Shader.cpp" />
+    <ClCompile Include="..\Core\UniformGui.cpp" />
     <ClCompile Include="..\imgui-master\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="..\imgui-master\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\imgui-master\imgui.cpp" />

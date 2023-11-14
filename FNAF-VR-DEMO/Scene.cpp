@@ -10,6 +10,7 @@
 #include "DrawGui.h"
 
 #include "InitShader.h" //Functions for loading shaders from text files
+#include "Shader.h"
 //#include "LoadMesh.h" //Functions for creating OpenGL buffers from mesh files
 #include "LoadTexture.h" //Functions for creating OpenGL textures from image files
 #include "MeshBase.h"
@@ -25,7 +26,8 @@ std::string ShaderDir = "shaders/";
 
 static const std::string vertex_shader("template.vert");
 static const std::string fragment_shader("template.frag");
-GLuint shader_program = -1;
+//GLuint shader_program = -1;
+std::shared_ptr<Shader> shader_program;
 
 static const std::string mesh_name = "assets/Amago0.obj";
 static const std::string texture_name = "assets/AmagoT.bmp";
@@ -33,8 +35,9 @@ static const std::string texture_name = "assets/AmagoT.bmp";
 
 static const std::string skinned_vertex_shader("skinning.vert");
 static const std::string skinned_fragment_shader("skinning.frag");
-GLuint skinned_shader_program = -1;
-static const std::string map_name = "assets/Map/Scene.dae";
+//GLuint skinned_shader_program = -1;
+std::shared_ptr<Shader> skinned_shader_program;
+static const std::string map_name = "assets/Map2/Scene.gltf";
 
 GLuint texture_id = -1; // Texture map for mesh
 //MeshData mesh_data;
@@ -55,8 +58,10 @@ struct SceneUniforms {
     glm::mat4 PV; // camera projection * view matrix
     glm::vec4 eye_w = glm::vec4(0.0f, 0.0f, 3.0f, 1.0f); // world-space eye position
     glm::mat4 translation = glm::translate(glm::vec3(0.0f, 0.f, 3.0f));
-    float rotation_angle = 135.f;
-    glm::vec3 initial_location = glm::vec3(4.29809f, -5.f, -29.f);
+    //float rotation_angle = 135.f;
+    //glm::vec3 initial_location = glm::vec3(4.29809f, -5.f, -29.f);
+    float rotation_angle = -90.f;
+    glm::vec3 initial_location = glm::vec3(-1.78686f, -16.7688f, -20.7703f);
 } SceneData;
 
 struct LightUniforms {
@@ -126,7 +131,8 @@ void Scene::Display(GLFWwindow* window)
     //SceneData.P = glm::perspective(glm::pi<float>() / 4.0f, GlfwWindow::Aspect, 0.1f, 100.0f);
     //SceneData.PV = SceneData.P * SceneData.V;
 
-    glUseProgram(shader_program);
+    //glUseProgram(shader_program);
+    shader_program->UseProgram();
 
     // Note that we don't need to set the value of a uniform here. The value is set with the "binding" in the layout qualifier
     glBindTextureUnit(0, texture_id);
@@ -139,13 +145,14 @@ void Scene::Display(GLFWwindow* window)
     glUniformMatrix4fv(UniformLocs::M, 1, false, glm::value_ptr(M));
     glDrawElements(GL_TRIANGLES, mesh->mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
 
-    glUseProgram(skinned_shader_program);
+    // glUseProgram(skinned_shader_program);
+    skinned_shader_program->UseProgram();
 
-    glm::mat4 RS = glm::rotate(SceneData.rotation_angle, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::vec3(1.f, -1.f, 1.f));
+    glm::mat4 RS = glm::rotate(SceneData.rotation_angle, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::vec3(1.f, 1.f, 1.f));
     glm::mat4 M2 = glm::translate(SceneData.initial_location) * RS;
     
-    glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program, "PV"), 1, false, glm::value_ptr(SceneData.PV));
-    glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program, "M"), 1, false, glm::value_ptr(M2));
+    glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program->GetShaderID(), "PV"), 1, false, glm::value_ptr(SceneData.PV));
+    glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program->GetShaderID(), "M"), 1, false, glm::value_ptr(M2));
     skinned_mesh->Render();
 
     // Swap front and back buffers
@@ -164,7 +171,8 @@ void Scene::DisplayVr(const glm::mat4& P, const glm::mat4& V)
     SceneData.V = V * Scene::SceneData.translation;
     SceneData.PV = SceneData.P * SceneData.V;
 
-    glUseProgram(shader_program);
+    //glUseProgram(shader_program);
+    shader_program->UseProgram();
 
     // Note that we don't need to set the value of a uniform here. The value is set with the "binding" in the layout qualifier
     glBindTextureUnit(0, texture_id);
@@ -185,12 +193,13 @@ void Scene::DisplayVr(const glm::mat4& P, const glm::mat4& V)
         glDrawElements(GL_TRIANGLES, mesh->mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
     }
 
-    glUseProgram(skinned_shader_program);
+    //glUseProgram(skinned_shader_program);
+    skinned_shader_program->UseProgram();
 
-    glm::mat4 RS = glm::rotate(SceneData.rotation_angle, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::vec3(1.f, -1.f, 1.f));
+    glm::mat4 RS = glm::rotate(SceneData.rotation_angle, glm::vec3(1.0f, 0.0f, 0.0f)) * glm::scale(glm::vec3(1.f, 1.f, 1.f));
     glm::mat4 M2 = glm::translate(SceneData.initial_location) * RS;
-    glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program, "PV"), 1, false, glm::value_ptr(SceneData.PV));
-    glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program, "M"), 1, false, glm::value_ptr(M2));
+    glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program->GetShaderID(), "PV"), 1, false, glm::value_ptr(SceneData.PV));
+    glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program->GetShaderID(), "M"), 1, false, glm::value_ptr(M2));
     skinned_mesh->Render();
     
     // No swap buffers in this function
@@ -217,7 +226,7 @@ void Scene::Idle()
     time_passed += dt;
 
     skinned_mesh->Update(time_sec);
-    glUniform1f(glGetUniformLocation(skinned_shader_program, "time"), time_sec);
+    glUniform1f(glGetUniformLocation(skinned_shader_program->GetShaderID(), "time"), time_sec);
 }
 
 void Scene::Init()
@@ -252,7 +261,8 @@ void Scene::Init()
     //mesh_data = LoadMesh(mesh_name);
     mesh = std::make_shared<MeshBase>(mesh_name);
     texture_id = LoadTexture(texture_name);
-    shader_program = InitShader(vertex_shader.c_str(), fragment_shader.c_str());
+    shader_program = std::make_shared<Shader>(vertex_shader.c_str(), fragment_shader.c_str());
+    shader_program->Init();
 
     // Create and initialize uniform buffers
     glGenBuffers(1, &scene_ubo);
@@ -272,12 +282,18 @@ void Scene::Init()
 
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-    skinned_shader_program = InitShader(skinned_vertex_shader.c_str(), skinned_fragment_shader.c_str());
+    skinned_shader_program = std::make_shared<Shader>(skinned_vertex_shader.c_str(), skinned_fragment_shader.c_str());
+    skinned_shader_program->Init();
+
     skinned_mesh = std::make_shared<SkinnedMesh>();
     skinned_mesh->LoadMesh(map_name);
+    
 
     // glGetIntegerv(GL_VIEWPORT, &SceneData.Viewport[0]);
     // Camera::UpdateV();
     // Camera::UpdateP();
     // DrawGui::InitVr();
+
+    std::cout << "///////////////////////////////\n VALID: " << ValidTextureFilename("test.tga") << std::endl;
+    std::cout << "///////////////////////////////\n VALID: " << ValidTextureFilename("test.bmp") << std::endl;
 }

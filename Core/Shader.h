@@ -5,12 +5,14 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include "UniformGui.h"
+#include <iostream>
 
 class Shader
 {
    public:
       Shader(const std::string& vs_name, const std::string& fs_name);
       Shader(const std::string& vs_name, const std::string& gs_name, const std::string& fs_name);
+      ~Shader();
       bool Init();
       bool Reload();
       void UseProgram();
@@ -19,6 +21,12 @@ class Shader
       void SetMode(int mode);
       void DrawUniformGui(bool& open);
       std::string GetFilename(int i) {assert(i<5); return mFilenames[i];}
+
+      template <typename T>
+      void setUniform(const std::string& name, T&& v) const;
+
+      template <typename T>
+      void setUniform(const std::string& name, T& v) const;
 
    protected:
       UniformGuiContext mGuiContext;

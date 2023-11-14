@@ -1,6 +1,12 @@
 #include "Shader.h"
 #include "InitShader.h"
 
+#include <GL/glew.h>
+
+#include <stdexcept>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 bool Shader::sErrorFlag = false;
 
 Shader::Shader(const std::string& vs_name, const std::string& fs_name)
@@ -16,6 +22,11 @@ Shader::Shader(const std::string& vs_name, const std::string& gs_name, const std
    mFilenames[GS_INDEX] = gs_name;
    mFilenames[FS_INDEX] = fs_name;
    sAllShaders().push_back(this);
+}
+
+Shader::~Shader()
+{
+   sAllShaders().remove(this);
 }
 
 
@@ -62,6 +73,7 @@ bool Shader::Init()
             std::error_code ec;
             mTimestamp[i] = std::filesystem::last_write_time(filepath, ec);
             //TODO: handle error code
+            std::cout << "Shader filepath: " << filepath << std::endl;
          }
       }
    }
@@ -135,3 +147,211 @@ void Shader::DrawUniformGui(bool& open)
       UniformGui(mGuiContext, open);
    }
 }
+
+// define helper macro for setting shader uniforms
+#define GL_SET_UNIFORM_V(num, type, value) \
+    glUniform##num##type##v(glGetUniformLocation(mShader, name.c_str()), 1, value)
+#define GL_SET_UNIFORM_M(num, type, value) \
+    glUniformMatrix##num##type##v(glGetUniformLocation(mShader, name.c_str()), 1, GL_FALSE, value)
+
+/////////////////////////////////////////////////////
+template <typename T>
+void Shader::setUniform(const std::string& name, T&& v) const
+{
+    throw std::runtime_error("Class Shader::setUniform load unsupported class!");
+}
+
+template <>
+void Shader::setUniform<bool>(const std::string& name, bool&& v) const
+{
+    glUniform1i(glGetUniformLocation(mShader, name.c_str()), static_cast<int>(v));
+}
+
+template <>
+void Shader::setUniform<int>(const std::string& name, int&& v) const
+{
+    glUniform1i(glGetUniformLocation(mShader, name.c_str()), v);
+}
+
+template <>
+void Shader::setUniform<float>(const std::string& name, float&& v) const
+{
+    glUniform1f(glGetUniformLocation(mShader, name.c_str()), v);
+}
+
+template <>
+void Shader::setUniform<glm::vec2>(const std::string& name, glm::vec2&& v) const
+{
+    __glewUniform2fv(__glewGetUniformLocation(mShader, name.c_str()), 1, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::vec3>(const std::string& name, glm::vec3&& v) const
+{
+    GL_SET_UNIFORM_V(3, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::vec4>(const std::string& name, glm::vec4&& v) const
+{
+    GL_SET_UNIFORM_V(4, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat2>(const std::string& name, glm::mat2&& v) const
+{
+    GL_SET_UNIFORM_M(2, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat3>(const std::string& name, glm::mat3&& v) const
+{
+    GL_SET_UNIFORM_M(3, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat4>(const std::string& name, glm::mat4&& v) const
+{
+    GL_SET_UNIFORM_M(4, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat2x3>(const std::string& name, glm::mat2x3&& v) const
+{
+    GL_SET_UNIFORM_M(2x3, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat3x2>(const std::string& name, glm::mat3x2&& v) const
+{
+    GL_SET_UNIFORM_M(3x2, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat2x4>(const std::string& name, glm::mat2x4&& v) const
+{
+    GL_SET_UNIFORM_M(2x4, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat4x2>(const std::string& name, glm::mat4x2&& v) const
+{
+    GL_SET_UNIFORM_M(4x2, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat3x4>(const std::string& name, glm::mat3x4&& v) const
+{
+    GL_SET_UNIFORM_M(3x4, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat4x3>(const std::string& name, glm::mat4x3&& v) const
+{
+    GL_SET_UNIFORM_M(4x3, f, glm::value_ptr(v));
+}
+
+/////////////////////////////////////////////////////
+
+template <typename T>
+void Shader::setUniform(const std::string& name, T& v) const
+{
+    throw std::runtime_error("Class Shader::setUniform load unsupported class!");
+}
+
+template <>
+void Shader::setUniform<bool>(const std::string& name, bool& v) const
+{
+    glUniform1i(glGetUniformLocation(mShader, name.c_str()), static_cast<int>(v));
+}
+
+template <>
+void Shader::setUniform<int>(const std::string& name, int& v) const
+{
+    glUniform1i(glGetUniformLocation(mShader, name.c_str()), v);
+}
+
+template <>
+void Shader::setUniform<float>(const std::string& name, float& v) const
+{
+    glUniform1f(glGetUniformLocation(mShader, name.c_str()), v);
+}
+
+template <>
+void Shader::setUniform<glm::vec2>(const std::string& name, glm::vec2& v) const
+{
+    // glUniform3fv(glGetUniformLocation(mShader, name.c_str()), 1, glm::value_ptr(v));
+    GL_SET_UNIFORM_V(2, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::vec3>(const std::string& name, glm::vec3& v) const
+{
+    // glUniform3fv(glGetUniformLocation(mShader, name.c_str()), 1, glm::value_ptr(v));
+    GL_SET_UNIFORM_V(3, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::vec4>(const std::string& name, glm::vec4& v) const
+{
+    // glUniform3fv(glGetUniformLocation(mShader, name.c_str()), 1, glm::value_ptr(v));
+    GL_SET_UNIFORM_V(4, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat2>(const std::string& name, glm::mat2& v) const
+{
+    GL_SET_UNIFORM_M(2, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat3>(const std::string& name, glm::mat3& v) const
+{
+    GL_SET_UNIFORM_M(3, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat4>(const std::string& name, glm::mat4& v) const
+{
+    GL_SET_UNIFORM_M(4, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat2x3>(const std::string& name, glm::mat2x3& v) const
+{
+    GL_SET_UNIFORM_M(2x3, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat3x2>(const std::string& name, glm::mat3x2& v) const
+{
+    GL_SET_UNIFORM_M(3x2, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat2x4>(const std::string& name, glm::mat2x4& v) const
+{
+    GL_SET_UNIFORM_M(2x4, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat4x2>(const std::string& name, glm::mat4x2& v) const
+{
+    GL_SET_UNIFORM_M(4x2, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat3x4>(const std::string& name, glm::mat3x4& v) const
+{
+    GL_SET_UNIFORM_M(3x4, f, glm::value_ptr(v));
+}
+
+template <>
+void Shader::setUniform<glm::mat4x3>(const std::string& name, glm::mat4x3& v) const
+{
+    GL_SET_UNIFORM_M(4x3, f, glm::value_ptr(v));
+}
+
+/////////////////////////////////////////////////////
+#undef GL_SET_UNIFORM_V
+#undef GL_SET_UNIFORM_M
