@@ -12,6 +12,7 @@
 #include "InitShader.h" //Functions for loading shaders from text files
 #include "Shader.h"
 //#include "LoadMesh.h" //Functions for creating OpenGL buffers from mesh files
+#include "AnimeMesh.h"
 #include "LoadTexture.h" //Functions for creating OpenGL textures from image files
 #include "MeshBase.h"
 #include "SkinnedMesh.h"
@@ -32,17 +33,21 @@ std::shared_ptr<Shader> shader_program;
 static const std::string mesh_name = "assets/Amago0.obj";
 static const std::string texture_name = "assets/AmagoT.bmp";
 
-
 static const std::string skinned_vertex_shader("skinning.vert");
 static const std::string skinned_fragment_shader("skinning.frag");
 //GLuint skinned_shader_program = -1;
 std::shared_ptr<Shader> skinned_shader_program;
 static const std::string map_name = "assets/Map2/Scene.gltf";
 
+static const std::string freddy_model = "assets/Characters/freddy/freddy_ill_walk.gltf";
+static const std::string bunny_model = "assets/Characters/bunny/bunny_crawl.gltf";
+
 GLuint texture_id = -1; // Texture map for mesh
 //MeshData mesh_data;
 std::shared_ptr<MeshBase> mesh;
 std::shared_ptr<SkinnedMesh> skinned_mesh;
+std::shared_ptr<AnimeMesh> freddy;
+std::shared_ptr<AnimeMesh> bunny;
 
 float angle = 0.0f;
 float scale = 1.0f;
@@ -62,6 +67,21 @@ struct SceneUniforms {
     //glm::vec3 initial_location = glm::vec3(4.29809f, -5.f, -29.f);
     float rotation_angle = -90.f;
     glm::vec3 initial_location = glm::vec3(-1.78686f, -16.7688f, -20.7703f);
+    glm::vec3 freddy_initial_location = glm::vec3(-1.78686f, -13.f, -30.7703f);
+    glm::vec3 bunny_initial_location = glm::vec3(-1.78686f, -16.7f, -20.7703f);
+
+    float freddy_rotation_angle = 15.15f;
+    float bunny_rotation_angle = 0.f;//150.f;
+
+    glm::mat4 Freddy_M = glm::translate(freddy_initial_location)
+                        * glm::rotate(glm::radians(160.f), glm::vec3(1.0f, 0.0f, 0.0f))
+                        * glm::scale(glm::vec3(0.5f, -0.5f, -0.5f));
+    
+    glm::mat4 Bunny_M = glm::translate(bunny_initial_location)
+                    * glm::rotate(glm::radians(-25.f), glm::vec3(1.0f, 0.0f, 0.0f))
+                    * glm::rotate(glm::radians(-10.f), glm::vec3(0.0f, 1.0f, 0.0f))
+                    * glm::rotate(glm::radians(-5.f), glm::vec3(0.0f, 0.0f, 1.0f))
+                    * glm::scale(glm::vec3(0.01f, -0.01f, -0.01f));
 } SceneData;
 
 struct LightUniforms {
@@ -131,6 +151,7 @@ void Scene::Display(GLFWwindow* window)
     //SceneData.P = glm::perspective(glm::pi<float>() / 4.0f, GlfwWindow::Aspect, 0.1f, 100.0f);
     //SceneData.PV = SceneData.P * SceneData.V;
 
+    /* remove fish
     //glUseProgram(shader_program);
     shader_program->UseProgram();
 
@@ -144,6 +165,7 @@ void Scene::Display(GLFWwindow* window)
     glBindVertexArray(mesh->mVao);
     glUniformMatrix4fv(UniformLocs::M, 1, false, glm::value_ptr(M));
     glDrawElements(GL_TRIANGLES, mesh->mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
+    */
 
     // glUseProgram(skinned_shader_program);
     skinned_shader_program->UseProgram();
@@ -151,10 +173,25 @@ void Scene::Display(GLFWwindow* window)
     glm::mat4 RS = glm::rotate(SceneData.rotation_angle, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::vec3(1.f, 1.f, 1.f));
     glm::mat4 M2 = glm::translate(SceneData.initial_location) * RS;
     
-    glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program->GetShaderID(), "PV"), 1, false, glm::value_ptr(SceneData.PV));
-    glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program->GetShaderID(), "M"), 1, false, glm::value_ptr(M2));
+    // glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program->GetShaderID(), "PV"), 1, false, glm::value_ptr(SceneData.PV));
+    skinned_shader_program->setUniform("PV", SceneData.PV);
+    // glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program->GetShaderID(), "M"), 1, false, glm::value_ptr(M2));
+    skinned_shader_program->setUniform("M", M2);
+    skinned_shader_program->setUniform("Mode", 0);
     skinned_mesh->Render();
 
+    // Freddy
+    skinned_shader_program->setUniform("PV", SceneData.PV);
+    skinned_shader_program->setUniform("M", SceneData.Freddy_M);
+    skinned_shader_program->setUniform("Mode", 1);
+    freddy->Render();
+    
+    // Bunny
+    skinned_shader_program->setUniform("PV", SceneData.PV);
+    skinned_shader_program->setUniform("M", SceneData.Bunny_M);
+    skinned_shader_program->setUniform("Mode", 1);
+    bunny->Render();
+    
     // Swap front and back buffers
     glfwSwapBuffers(window);
 }
@@ -171,6 +208,7 @@ void Scene::DisplayVr(const glm::mat4& P, const glm::mat4& V)
     SceneData.V = V * Scene::SceneData.translation;
     SceneData.PV = SceneData.P * SceneData.V;
 
+    /* remove fish
     //glUseProgram(shader_program);
     shader_program->UseProgram();
 
@@ -192,15 +230,32 @@ void Scene::DisplayVr(const glm::mat4& P, const glm::mat4& V)
         glUniformMatrix4fv(UniformLocs::M, 1, false, glm::value_ptr(Mi));
         glDrawElements(GL_TRIANGLES, mesh->mSubmesh[0].mNumIndices, GL_UNSIGNED_INT, 0);
     }
+    */
 
     //glUseProgram(skinned_shader_program);
     skinned_shader_program->UseProgram();
 
     glm::mat4 RS = glm::rotate(SceneData.rotation_angle, glm::vec3(1.0f, 0.0f, 0.0f)) * glm::scale(glm::vec3(1.f, 1.f, 1.f));
     glm::mat4 M2 = glm::translate(SceneData.initial_location) * RS;
-    glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program->GetShaderID(), "PV"), 1, false, glm::value_ptr(SceneData.PV));
-    glUniformMatrix4fv(glGetUniformLocation(skinned_shader_program->GetShaderID(), "M"), 1, false, glm::value_ptr(M2));
+    skinned_shader_program->setUniform("PV", SceneData.PV);
+    skinned_shader_program->setUniform("M", M2);
+    skinned_shader_program->setUniform("Mode", 0);
     skinned_mesh->Render();
+
+    // Freddy
+    glm::mat4 Freddy_RS = glm::rotate(SceneData.freddy_rotation_angle, glm::vec3(1.0f, 0.0f, 0.0f))
+                        * glm::scale(glm::vec3(0.5f, -0.5f, -0.5f));
+    glm::mat4 Freddy_M = glm::translate(SceneData.freddy_initial_location) * Freddy_RS;
+    skinned_shader_program->setUniform("PV", SceneData.PV);
+    skinned_shader_program->setUniform("M", SceneData.Freddy_M);
+    skinned_shader_program->setUniform("Mode", 1);
+    freddy->Render();
+    
+    // Bunny
+    skinned_shader_program->setUniform("PV", SceneData.PV);
+    skinned_shader_program->setUniform("M", SceneData.Bunny_M);
+    skinned_shader_program->setUniform("Mode", 1);
+    bunny->Render();
     
     // No swap buffers in this function
 }
@@ -227,6 +282,15 @@ void Scene::Idle()
 
     skinned_mesh->Update(time_sec);
     glUniform1f(glGetUniformLocation(skinned_shader_program->GetShaderID(), "time"), time_sec);
+
+    freddy->Update(time_sec);
+    glUniform1f(glGetUniformLocation(skinned_shader_program->GetShaderID(), "time"), time_sec);
+    
+    bunny->Update(time_sec);
+    glUniform1f(glGetUniformLocation(skinned_shader_program->GetShaderID(), "time"), time_sec);
+
+    SceneData.bunny_rotation_angle += 0.01f;
+    std::cout << "Angle" << SceneData.bunny_rotation_angle << std::endl;
 }
 
 void Scene::Init()
@@ -287,7 +351,12 @@ void Scene::Init()
 
     skinned_mesh = std::make_shared<SkinnedMesh>();
     skinned_mesh->LoadMesh(map_name);
-    
+
+    freddy = std::make_shared<AnimeMesh>();
+    freddy->LoadMesh(freddy_model);
+
+    bunny = std::make_shared<AnimeMesh>();
+    bunny->LoadMesh(bunny_model);
 
     // glGetIntegerv(GL_VIEWPORT, &SceneData.Viewport[0]);
     // Camera::UpdateV();

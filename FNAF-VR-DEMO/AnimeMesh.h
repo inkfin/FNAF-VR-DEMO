@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <map>
 #include <vector>
@@ -13,10 +13,10 @@
 #include <assimp/matrix4x4.h>
 #include "MeshBase.h"
 
-class SkinnedMesh : MeshBase {
+class AnimeMesh : MeshBase {
 public:
-    SkinnedMesh();
-    ~SkinnedMesh();
+    AnimeMesh();
+    ~AnimeMesh();
 
     virtual bool LoadMesh(const std::string& filename);
 
