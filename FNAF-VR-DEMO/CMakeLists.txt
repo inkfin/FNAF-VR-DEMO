@@ -46,18 +46,22 @@ file(GLOB CORE_SRC      ../Core/AttriblessRendering.cpp
                         ../Core/InitShader.cpp
                         ../Core/LoadMesh.cpp
                         ../Core/LoadTexture.cpp
+                        ../Core/MeshBase.cpp
+                        ../Core/GlEnumToString.cpp
+                        ../Core/Shader.cpp
+                        ../Core/UniformGui.cpp
 )
 
-file(GLOB LIBZIP_SRC    ../include/libzip/*.c
-                        ../include/libzip/*.h
-)
+# file(GLOB LIBZIP_SRC    ../include/libzip/*.c
+#                         ../include/libzip/*.h
+# )
 
 file(GLOB_RECURSE SOURCE CONFIGURE_DEPENDS
     "./*.h"
     "./*.cpp"
 )
 
-message(STATUS "Source files: ${SOURCE}")
+# message(STATUS "Source files: ${SOURCE}")
 
 add_executable(${PROJECT_NAME} ${SOURCE}
                             ${IMGUI_SRC}
