@@ -6,6 +6,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <glm/glm.hpp>
+#include "glm/gtc/matrix_transform.hpp"
+#include <glm/gtx/transform.hpp>
 
 namespace UniformLoc {
 const int PV = 0;
@@ -56,6 +58,11 @@ public:
     glm::vec3 mBbMin = glm::vec3(0.0f);
     glm::vec3 mBbMax = glm::vec3(0.0f);
 
+    glm::vec3 mTranslation = glm::vec3(0.0f);
+    // Euler angle, apply by x, y, z
+    glm::vec3 mRotation = glm::vec3(0.0f);
+    glm::vec3 mScale = glm::vec3(1.0f);
+
     std::vector<SubmeshData> mSubmesh;
 
     MeshBase() {};
@@ -74,13 +81,32 @@ public:
 
     virtual void Clear();
 
-    virtual bool LoadMesh(const std::string& filename, // absolute path to mesh
-        const bool normalScale = true, // scaled by its maximum bounding box
-        const unsigned int flags = aiProcessPreset_TargetRealtime_Quality | aiProcess_PreTransformVertices | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs // load flags
-    );
+    virtual bool LoadMesh(const std::string& filename);
+
+    /**
+     * LoadMesh base function
+     *  @param filename absolute path to mesh
+     *  @param normalScale scaled by its maximum bounding box
+     *  @param flags assimp load flag
+     */
+    virtual bool LoadMesh(const std::string& filename, const bool normalScale, const unsigned int flags);
     void DrawMesh() const;
 
+    glm::mat4 GetModelMatrix() const {
+        // Apply TRS
+        glm::mat4 result;
+        result = glm::scale(mScale);
+
+        result = glm::rotate(glm::radians(mRotation.x), glm::vec3(1.f, 0.f, 0.f)) * result;
+        result = glm::rotate(glm::radians(mRotation.y), glm::vec3(0.f, 1.f, 0.f)) * result;
+        result = glm::rotate(glm::radians(mRotation.z), glm::vec3(0.f, 0.f, 1.f)) * result;
+
+        result = glm::translate(mTranslation) * result;
+        return result;
+    }
+
     virtual void Render();
+    virtual void Update(float deltaTime) {};
 
 protected:
     void BufferIndexedVerts();

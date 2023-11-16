@@ -13,15 +13,15 @@
 #include <assimp/matrix4x4.h>
 #include "MeshBase.h"
 
-class SkinnedMesh : MeshBase {
+class SkinnedMesh : public MeshBase {
 public:
     SkinnedMesh();
     ~SkinnedMesh();
 
-    virtual bool LoadMesh(const std::string& filename);
+    bool LoadMesh(const std::string& filename) override;
 
-    void Update(float deltaSeconds);
-    void Render();
+    void Update(float deltaSeconds) override;
+    void Render() override;
 
     float GetScaleFactor() { return mScaleFactor; }
 

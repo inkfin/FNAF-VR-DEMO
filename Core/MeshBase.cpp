@@ -34,6 +34,10 @@ void MeshBase::Clear()
         glDeleteBuffers(1, &mVboNormals);
     }
 }
+bool MeshBase::LoadMesh(const std::string& filename) {
+    return LoadMesh(filename, true,
+        aiProcessPreset_TargetRealtime_Quality | aiProcess_PreTransformVertices | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
+}
 
 bool MeshBase::LoadMesh(const std::string& filename, const bool normalScale, const unsigned int flags)
 {

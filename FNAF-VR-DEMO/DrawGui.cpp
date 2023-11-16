@@ -7,7 +7,6 @@
 
 
 #include "DrawGui.h"
-#include "Scene.h"
 
 
 bool DrawGui::HideGui = false;
