@@ -1,5 +1,4 @@
 #include "Game.h"
-#include "VR/Scene.h"
 #include "Game/GlobalObjects.h"
 
 void Game::Init()

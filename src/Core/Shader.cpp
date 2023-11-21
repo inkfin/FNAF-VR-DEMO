@@ -26,7 +26,14 @@ Shader::Shader(const std::string& vs_name, const std::string& gs_name, const std
 
 Shader::~Shader()
 {
-   sAllShaders().remove(this);
+   if (!sAllShaders().empty()) {
+       sAllShaders().remove(this);
+   }
+}
+
+void Shader::ClearAllShaders()
+{
+    sAllShaders().clear();
 }
 
 

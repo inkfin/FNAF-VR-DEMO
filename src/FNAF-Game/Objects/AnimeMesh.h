@@ -74,7 +74,7 @@ private:
         std::vector<unsigned int>& Indices);
     void LoadBones(unsigned int MeshIndex, const aiMesh* paiMesh, std::vector<VertexBoneData>& Bones);
     bool InitMaterials(const aiScene* pScene, const std::string& Filename);
-    void Clear();
+    void Clear() override;
 
 #define INVALID_MATERIAL 0xFFFFFFFF
 

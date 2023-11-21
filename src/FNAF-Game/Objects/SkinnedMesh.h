@@ -16,7 +16,7 @@
 class SkinnedMesh : public MeshBase {
 public:
     SkinnedMesh();
-    ~SkinnedMesh();
+    ~SkinnedMesh() override;
 
     bool LoadMesh(const std::string& filename) override;
 

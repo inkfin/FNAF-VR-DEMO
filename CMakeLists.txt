@@ -95,7 +95,7 @@ set(CORE_INCLUDE_DIR
 )
 
 
-#add_subdirectory(src/FNAF-GL-DEMO)
+add_subdirectory(src/FNAF-GL-DEMO)
 add_subdirectory(src/FNAF-VR-DEMO)
 
 

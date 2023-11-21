@@ -97,7 +97,7 @@ void GameScene::Idle()
     prev_time_sec = time_sec;
     time_passed += dt;
 
-    gMapMesh->Update(time_sec);
+//    gMapMesh->Update(time_sec);
     gFreddy.mMesh->Update(time_sec);
     gBunny.mMesh->Update(time_sec);
 

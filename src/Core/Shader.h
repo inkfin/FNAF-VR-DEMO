@@ -51,4 +51,6 @@ class Shader
       static void sReloadAll();
       static void ClearError() {sErrorFlag = false;}
       static bool GetError() {return sErrorFlag;}
+
+      static void ClearAllShaders();
 };

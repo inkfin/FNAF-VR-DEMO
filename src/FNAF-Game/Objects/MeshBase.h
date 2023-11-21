@@ -67,21 +67,11 @@ public:
 
     MeshBase() {};
 
-    MeshBase(const std::string& filename)
-    {
-        LoadMesh(filename);
-    }
-
-    MeshBase(const aiScene* scene)
-        : mScene(scene)
-    {
-    }
-
     virtual ~MeshBase();
 
     virtual void Clear();
 
-    virtual bool LoadMesh(const std::string& filename);
+    virtual bool LoadMesh(const std::string& filename) = 0;
 
     /**
      * LoadMesh base function
@@ -89,7 +79,7 @@ public:
      *  @param normalScale scaled by its maximum bounding box
      *  @param flags assimp load flag
      */
-    virtual bool LoadMesh(const std::string& filename, const bool normalScale, const unsigned int flags);
+    bool LoadMesh(const std::string& filename, const bool normalScale, const unsigned int flags);
     void DrawMesh() const;
 
     [[nodiscard]] glm::mat4 GetModelMatrix() const {
@@ -105,7 +95,7 @@ public:
         return result;
     }
 
-    virtual void Render();
+    virtual void Render() = 0;
     virtual void Update(float deltaTime) {};
 
 protected:

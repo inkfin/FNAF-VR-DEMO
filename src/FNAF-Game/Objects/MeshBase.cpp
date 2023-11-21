@@ -43,11 +43,11 @@ void MeshBase::Clear()
     }
 }
 
-bool MeshBase::LoadMesh(const std::string& filename)
-{
-    return LoadMesh(filename, true,
-        aiProcessPreset_TargetRealtime_Quality | aiProcess_PreTransformVertices | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
-}
+//bool MeshBase::LoadMesh(const std::string& filename)
+//{
+//    return LoadMesh(filename, true,
+//        aiProcessPreset_TargetRealtime_Quality | aiProcess_PreTransformVertices | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
+//}
 
 bool MeshBase::LoadMesh(const std::string& filename, const bool normalScale, const unsigned int flags)
 {
@@ -100,10 +100,10 @@ void MeshBase::DrawMesh() const
     }
 }
 
-void MeshBase::Render()
-{
-    DrawMesh();
-}
+//void MeshBase::Render()
+//{
+//    DrawMesh();
+//}
 
 void MeshBase::GetBoundingBox(const aiScene* scene, glm::vec3* min, glm::vec3* max)
 {

@@ -154,6 +154,35 @@ void AnimeMesh::Update(float deltaSeconds)
     BoneTransform(deltaSeconds, mTransforms);
 }
 
+void AnimeMesh::Render()
+{
+    glUniform1i(UniformLoc::NumBones, m_NumBones);
+    glUniformMatrix4fv(UniformLoc::Bones, mTransforms.size(), GL_TRUE, &mTransforms[0].a1);
+
+    glBindVertexArray(m_VAO);
+
+    for (unsigned int i = 0; i < m_Entries.size(); i++) {
+        const unsigned int MaterialIndex = m_Entries[i].MaterialIndex;
+
+        assert(MaterialIndex < m_Textures.size());
+
+        if (m_Textures[MaterialIndex]) {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, m_Textures[MaterialIndex]);
+        }
+
+        glDrawElementsBaseVertex(GL_TRIANGLES,
+                                 m_Entries[i].NumIndices,
+                                 GL_UNSIGNED_INT,
+                                 (void*)(sizeof(unsigned int) * m_Entries[i].BaseIndex),
+                                 m_Entries[i].BaseVertex);
+    }
+
+    // Make sure the VAO is not changed from the outside
+    glBindVertexArray(0);
+}
+
+
 bool AnimeMesh::InitFromScene(const aiScene* pScene, const std::string& Filename)
 {
     m_Entries.resize(pScene->mNumMeshes);
@@ -328,34 +357,6 @@ bool AnimeMesh::InitMaterials(const aiScene* pScene, const std::string& Filename
     }
 
     return Ret;
-}
-
-void AnimeMesh::Render()
-{
-    glUniform1i(UniformLoc::NumBones, m_NumBones);
-    glUniformMatrix4fv(UniformLoc::Bones, mTransforms.size(), GL_TRUE, &mTransforms[0].a1);
-
-    glBindVertexArray(m_VAO);
-
-    for (unsigned int i = 0; i < m_Entries.size(); i++) {
-        const unsigned int MaterialIndex = m_Entries[i].MaterialIndex;
-
-        assert(MaterialIndex < m_Textures.size());
-
-        if (m_Textures[MaterialIndex]) {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, m_Textures[MaterialIndex]);
-        }
-
-        glDrawElementsBaseVertex(GL_TRIANGLES,
-            m_Entries[i].NumIndices,
-            GL_UNSIGNED_INT,
-            (void*)(sizeof(unsigned int) * m_Entries[i].BaseIndex),
-            m_Entries[i].BaseVertex);
-    }
-
-    // Make sure the VAO is not changed from the outside
-    glBindVertexArray(0);
 }
 
 unsigned int AnimeMesh::FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim)
