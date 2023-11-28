@@ -21,7 +21,7 @@ void Scene::Display(GLFWwindow* window)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Update Uniform Buffer Object
-    SceneData.P = glm::perspective(glm::pi<float>() / 4.0f, GlfwWindow::Aspect, 0.1f, 1000.0f);
+    SceneData.P = glm::perspective(glm::pi<float>() / 2.0f, GlfwWindow::Aspect, 0.1f, 1000.0f);
     SceneData.V = camera->GetViewMatrix();
     SceneData.PV = SceneData.P * SceneData.V;
 

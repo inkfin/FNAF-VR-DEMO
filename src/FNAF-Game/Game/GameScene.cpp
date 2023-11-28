@@ -48,25 +48,90 @@ void GameScene::ShaderInit() {
 
 }
 
+void GameScene::Init()
+{
+    SetShaderDir(ShaderDir);
+    //SetMeshDir(MeshDir);
+    //SetTextureDir(TextureDir);
+
+#pragma region OpenGL initial state
+    // glClearColor(SceneData.clear_color.r, SceneData.clear_color.g, SceneData.clear_color.b, SceneData.clear_color.a);
+
+    glEnable(GL_DEPTH_TEST);
+
+    // Enable gl_PointCoord in shader
+    glEnable(GL_POINT_SPRITE);
+    // Allow setting point size in fragment shader
+    glEnable(GL_PROGRAM_POINT_SIZE);
+/*
+    if (enable_msaa)
+    {
+        glEnable(GL_MULTISAMPLE);
+    }
+    else
+    {
+        glDisable(GL_MULTISAMPLE);
+    }
+*/
+#pragma endregion
+
+    bClearDefaultFb = false;
+
+    // Create and initialize uniform buffers
+    glGenBuffers(1, &light_ubo);
+    glBindBuffer(GL_UNIFORM_BUFFER, light_ubo);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(LightUniforms), nullptr, GL_STREAM_DRAW); // Allocate memory for the buffer, but don't copy (since pointer is null).
+    glBindBufferBase(GL_UNIFORM_BUFFER, UboBinding::light, light_ubo); // Associate this uniform buffer with the uniform block in the shader that has the same binding.
+
+    glGenBuffers(1, &material_ubo);
+    glBindBuffer(GL_UNIFORM_BUFFER, material_ubo);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(MaterialUniforms), nullptr, GL_STREAM_DRAW); // Allocate memory for the buffer, but don't copy (since pointer is null).
+    glBindBufferBase(GL_UNIFORM_BUFFER, UboBinding::material, material_ubo); // Associate this uniform buffer with the uniform block in the shader that has the same binding.
+
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    ModelInit();
+
+    ShaderInit();
+
+    //    DebugDraw::Init();
+
+    // glGetIntegerv(GL_VIEWPORT, &SceneData.Viewport[0]);
+    // Camera::Update();
+    // Camera::UpdateP();
+    // DrawGui::InitVr();
+}
+
+
 void GameScene::Render() {
+
+    // Copy buffer to GPU
+    glBindBuffer(GL_UNIFORM_BUFFER, light_ubo);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(LightUniforms), &LightData, GL_STREAM_DRAW);
+
+    glBindBuffer(GL_UNIFORM_BUFFER, material_ubo);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(MaterialUniforms), &MaterialData, GL_STREAM_DRAW);
 
     skinned_shader_program->UseProgram();
 
     skinned_shader_program->setUniform("PV", SceneData.PV);
     skinned_shader_program->setUniform("M", gMapMesh->GetModelMatrix());
     skinned_shader_program->setUniform("Mode", 0);
+    skinned_shader_program->setUniform("eye_w", SceneData.eye_w);
     gMapMesh->Render();
 
     // Freddy
     skinned_shader_program->setUniform("PV", SceneData.PV);
     skinned_shader_program->setUniform("M", gFreddy.GetModelMatrix());
     skinned_shader_program->setUniform("Mode", 1);
+    skinned_shader_program->setUniform("eye_w", SceneData.eye_w);
     gFreddy.mMesh->Render();
 
     // Bunny
     skinned_shader_program->setUniform("PV", SceneData.PV);
     skinned_shader_program->setUniform("M", gBunny.GetModelMatrix());
     skinned_shader_program->setUniform("Mode", 1);
+    skinned_shader_program->setUniform("eye_w", SceneData.eye_w);
     gBunny.mMesh->Render();
 
 //    DebugDraw::DrawAxis();
@@ -104,69 +169,4 @@ void GameScene::Idle()
     skinned_shader_program->setUniform("time", time_sec);
 
     // Pawn
-}
-
-
-void GameScene::Init()
-{
-    SetShaderDir(ShaderDir);
-    //SetMeshDir(MeshDir);
-    //SetTextureDir(TextureDir);
-
-#pragma region OpenGL initial state
-    // glClearColor(SceneData.clear_color.r, SceneData.clear_color.g, SceneData.clear_color.b, SceneData.clear_color.a);
-
-    glEnable(GL_DEPTH_TEST);
-
-    // Enable gl_PointCoord in shader
-    glEnable(GL_POINT_SPRITE);
-    // Allow setting point size in fragment shader
-    glEnable(GL_PROGRAM_POINT_SIZE);
-/*
-    if (enable_msaa)
-    {
-        glEnable(GL_MULTISAMPLE);
-    }
-    else
-    {
-        glDisable(GL_MULTISAMPLE);
-    }
-*/
-#pragma endregion
-
-    bClearDefaultFb = false;
-
-    // Create and initialize uniform buffers
-    glGenBuffers(1, &scene_ubo);
-    glBindBuffer(GL_UNIFORM_BUFFER, scene_ubo);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(SceneUniforms), nullptr, GL_STREAM_DRAW); // Allocate memory for the buffer, but don't copy (since pointer is null).
-    glBindBufferBase(GL_UNIFORM_BUFFER, UboBinding::scene, scene_ubo); // Associate this uniform buffer with the uniform block in the shader that has the same binding.
-
-    glGenBuffers(1, &light_ubo);
-    glBindBuffer(GL_UNIFORM_BUFFER, light_ubo);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(LightUniforms), &LightData, GL_STREAM_DRAW); // Allocate memory for the buffer, but don't copy (since pointer is null).
-    glBindBufferBase(GL_UNIFORM_BUFFER, UboBinding::light, light_ubo); // Associate this uniform buffer with the uniform block in the shader that has the same binding.
-
-    glGenBuffers(1, &material_ubo);
-    glBindBuffer(GL_UNIFORM_BUFFER, material_ubo);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(MaterialUniforms), &MaterialData, GL_STREAM_DRAW); // Allocate memory for the buffer, but don't copy (since pointer is null).
-    glBindBufferBase(GL_UNIFORM_BUFFER, UboBinding::material, material_ubo); // Associate this uniform buffer with the uniform block in the shader that has the same binding.
-
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-    ModelInit();
-
-    ShaderInit();
-
-//    DebugDraw::Init();
-
-    // glGetIntegerv(GL_VIEWPORT, &SceneData.Viewport[0]);
-    // Camera::Update();
-    // Camera::UpdateP();
-    // DrawGui::InitVr();
-}
-
-
-namespace GameScene {
-
 }

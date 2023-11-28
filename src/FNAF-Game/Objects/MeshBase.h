@@ -9,24 +9,6 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace UniformLoc {
-const int PV = 0;
-const int M = 1;
-const int Time = 2;
-const int NumBones = 3;
-const int Mode = 4;
-const int DebugID = 5;
-const int Bones = 20; // array of 100 bones
-};
-
-namespace AttribLoc {
-const int Pos = 0;
-const int TexCoord = 1;
-const int Normal = 2;
-const int BoneIds = 3;
-const int BoneWeights = 4;
-};
-
 struct SubmeshData {
     unsigned int mNumIndices;
     unsigned int mBaseIndex;
@@ -65,7 +47,7 @@ public:
 
     std::vector<SubmeshData> mSubmesh;
 
-    MeshBase() {};
+    MeshBase() = default;
 
     virtual ~MeshBase();
 
@@ -79,7 +61,7 @@ public:
      *  @param normalScale scaled by its maximum bounding box
      *  @param flags assimp load flag
      */
-    bool LoadMesh(const std::string& filename, const bool normalScale, const unsigned int flags);
+    bool LoadMesh(const std::string& filename, bool normalScale, unsigned int flags);
     void DrawMesh() const;
 
     [[nodiscard]] glm::mat4 GetModelMatrix() const {

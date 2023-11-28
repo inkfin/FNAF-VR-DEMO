@@ -154,6 +154,9 @@ public:
         if (move_down_flag && !move_up_flag) {
             ProcessKeyboard(DOWN, deltaTime);
         }
+
+        // update shader eye position
+        Scene::SceneData.eye_w = glm::vec4(Position, 1.0f);
     }
 
 private:

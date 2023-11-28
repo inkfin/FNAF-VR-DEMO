@@ -3,18 +3,13 @@ layout(binding = 0) uniform sampler2D color_tex;
 layout(location = 2) uniform float time;
 layout(location = 4) uniform int Mode;
 
-vec4 eye_w = vec4(0.0f, 1.5f, 0.5f, 1.0f);	//world-space eye position
-
-//vec4 La = vec4(1.0);	//ambient light color
-//vec4 Ld = vec4(1.0);	//diffuse light color
-//vec4 Ls = vec4(1.0);	//specular light color
-//vec4 light_w = vec4(0.0, 0.0, 1.0, 0.0); //world-space light position
-
-//vec4 ka = vec4(1.0);	//ambient material color
-//vec4 kd = vec4(1.0);	//diffuse material color
-//vec4 ks = vec4(1.0);	//specular material color
-//float shininess = 10.0; //specular exponent
-
+layout(std140, binding = 0) uniform SceneUniforms
+{
+   mat4 P;	//projection transformation
+   mat4 V;	//viewing transformation
+   mat4 PV;
+   vec4 eye_w;	//world-space eye position
+};
 
 layout(std140, binding = 1) uniform LightUniforms
 {

@@ -112,11 +112,8 @@ inline std::shared_ptr<SkinnedMesh> gMapMesh;
 //static const std::string fish_texture_name = "assets/AmagoT.bmp";
 
 // Shaders
-static const std::string vertex_shader("template.vert");
-static const std::string fragment_shader("template.frag");
-
-static const std::string skinned_vertex_shader("skinning.vert");
-static const std::string skinned_fragment_shader("skinning.frag");
+static const std::string skinned_vertex_shader("skinned_mesh.vert");
+static const std::string skinned_fragment_shader("skinned_mesh.frag");
 
 inline std::shared_ptr<Shader> shader_program;
 inline std::shared_ptr<Shader> skinned_shader_program;

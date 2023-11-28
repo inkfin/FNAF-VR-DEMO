@@ -5,7 +5,7 @@ layout(location = 2) uniform float time;
 layout(location = 3) uniform int num_bones = 0;
 layout(location = 4) uniform int Mode = 0;
 layout(location = 5) uniform int debug_id = 0;
-const int MAX_BONES = 100;
+#define MAX_BONES 100
 layout(location = 20) uniform mat4 bone_xform[MAX_BONES];
 
 

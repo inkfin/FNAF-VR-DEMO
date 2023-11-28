@@ -2,7 +2,7 @@
 
 #include <map>
 #include <vector>
-#include <assert.h>
+#include <cassert>
 #include <GL/glew.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -15,17 +15,36 @@
 
 class AnimeMesh : public MeshBase {
 public:
+    enum UniformLoc {
+        PV = 0,
+        M = 1,
+        Time = 2,
+        NumBones = 3,
+        Mode = 4,
+        DebugID = 5,
+        EyeW = 6,
+        Bones = 20, // array of 100 bones
+    };
+
+    enum AttribLoc {
+        Pos = 0,
+        TexCoord = 1,
+        Normal = 2,
+        BoneIds = 3,
+        BoneWeights = 4,
+    };
+
     AnimeMesh();
-    ~AnimeMesh();
+    ~AnimeMesh() override;
 
     bool LoadMesh(const std::string& filename) override;
 
     void Update(float deltaSeconds) override;
     void Render() override;
 
-    float GetScaleFactor() { return mScaleFactor; }
+    [[nodiscard]] float GetScaleFactor() const { return mScaleFactor; }
 
-    unsigned int NumBones() const { return m_NumBones; }
+    [[nodiscard]] unsigned int GetNumBones() const { return m_NumBones; }
 
     void BoneTransform(float TimeInSeconds, std::vector<aiMatrix4x4>& Transforms);
 
@@ -44,8 +63,8 @@ private:
     };
 
     struct VertexBoneData {
-        unsigned char IDs[NUM_BONES_PER_VERTEX];
-        float Weights[NUM_BONES_PER_VERTEX];
+        unsigned char IDs[NUM_BONES_PER_VERTEX] {};
+        float Weights[NUM_BONES_PER_VERTEX] {};
 
         VertexBoneData()
         {

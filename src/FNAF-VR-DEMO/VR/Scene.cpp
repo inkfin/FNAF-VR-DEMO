@@ -53,6 +53,7 @@ void Scene::Init()
     GameScene::Init();
 }
 
+// first call Idle(), then call Display()
 void Scene::Idle()
 {
     GameScene::Idle();
