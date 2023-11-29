@@ -8,8 +8,8 @@
 #include <memory>
 #include <glm/gtx/transform.hpp>
 #include "MeshBase.h"
+#include "StaticMesh.h"
 #include "SkinnedMesh.h"
-#include "AnimeMesh.h"
 #include "AIComponent.h"
 
 #define SHOCK_LEVEL_MAX 5

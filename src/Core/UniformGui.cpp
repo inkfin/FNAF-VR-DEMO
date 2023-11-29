@@ -1,8 +1,9 @@
+#include <windows.h>
+#include <cmath>
+#include <imgui.h>
+#include <glm/gtc/type_ptr.hpp>
 #include "UniformGui.h"
 #include "GlEnumToString.h"
-#include "imgui.h"
-#include <cmath>
-#include <glm/gtc/type_ptr.hpp>
 
 
 //Helper functions

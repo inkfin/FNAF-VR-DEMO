@@ -1,8 +1,8 @@
-#pragma once
+﻿#pragma once
 
 #include <map>
 #include <vector>
-#include <assert.h>
+#include <cassert>
 #include <GL/glew.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -13,19 +13,47 @@
 #include <assimp/matrix4x4.h>
 #include "MeshBase.h"
 
+// Shaders
+static const std::string anime_vertex_shader("skinned_mesh.vert");
+static const std::string anime_fragment_shader("skinned_mesh.frag");
+
+class Shader;
+
 class SkinnedMesh : public MeshBase {
+protected:
+    static Shader* mShader;
+
 public:
+    enum UniformLoc : unsigned int {
+        PV = 0,
+        M = 1,
+        Time = 2,
+        NumBones = 3,
+        Mode = 4,
+        DebugID = 5,
+        EyeW = 6,
+        Bones = 20, // array of 100 bones
+    };
+
+    enum AttribLoc : unsigned int {
+        Pos = 0,
+        TexCoord = 1,
+        Normal = 2,
+        BoneIds = 3,
+        BoneWeights = 4,
+    };
+
     SkinnedMesh();
-    ~SkinnedMesh() override;
+    ~SkinnedMesh();
 
     bool LoadMesh(const std::string& filename) override;
 
     void Update(float deltaSeconds) override;
     void Render() override;
 
-    float GetScaleFactor() { return mScaleFactor; }
+    [[nodiscard]] static Shader* sShader() { return mShader; }
 
-    unsigned int NumBones() const { return m_NumBones; }
+    [[nodiscard]] unsigned int GetNumBones() const { return m_NumBones; }
 
     void BoneTransform(float TimeInSeconds, std::vector<aiMatrix4x4>& Transforms);
 
@@ -44,8 +72,8 @@ private:
     };
 
     struct VertexBoneData {
-        unsigned char IDs[NUM_BONES_PER_VERTEX];
-        float Weights[NUM_BONES_PER_VERTEX];
+        unsigned char IDs[NUM_BONES_PER_VERTEX] {};
+        float Weights[NUM_BONES_PER_VERTEX] {};
 
         VertexBoneData()
         {
@@ -78,7 +106,7 @@ private:
 
 #define INVALID_MATERIAL 0xFFFFFFFF
 
-    enum VB_TYPES {
+    enum VB_TYPES : unsigned int {
         INDEX_BUFFER,
         POS_VB,
         NORMAL_VB,
@@ -87,8 +115,8 @@ private:
         NUM_VBs
     };
 
-    GLuint m_VAO;
-    GLuint m_Buffers[NUM_VBs];
+    GLuint m_VAO = 0;
+    GLuint m_Buffers[NUM_VBs] { 0 };
 
     struct MeshEntry {
         MeshEntry()
@@ -111,15 +139,11 @@ private:
     std::vector<GLuint> m_Textures;
 
     std::map<std::string, unsigned int> m_BoneMapping; // maps a bone name to its index
-    unsigned int m_NumBones;
+    unsigned int m_NumBones = 0;
     std::vector<BoneInfo> m_BoneInfo;
     aiMatrix4x4 m_GlobalInverseTransform;
     std::vector<aiMatrix4x4> mTransforms;
     std::map<std::string, aiNodeAnim*> mNodeMap;
 
-    float mScaleFactor;
-    aiVector3D mBbMin, mBbMax;
-    void CalcMeshBoundingBox(const aiMesh* mesh, aiVector3D* min, aiVector3D* max);
-    void CalcNodeBoundingBox(const aiNode* nd, aiVector3D* min, aiVector3D* max);
     void CalcBoundingBox();
 };

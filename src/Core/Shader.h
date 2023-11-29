@@ -16,8 +16,8 @@ class Shader
       ~Shader();
       bool Init();
       bool Reload();
-      void UseProgram();
-      int GetUniformLocation(const char* name);
+      void UseProgram() const;
+      int GetUniformLocation(const char* name) const;
       GLuint GetShaderID() { return mShader; }
       void SetMode(int mode);
       void DrawUniformGui(bool& open);

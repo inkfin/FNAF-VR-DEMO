@@ -3,25 +3,22 @@
 //
 #pragma once
 
-#include <Window/GlfwWindow.h>
-
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <Objects/Pawn.h>
-#include <Objects/SkinnedMesh.h>
+#include <Objects/StaticMesh.h>
+#include <Window/GlfwWindow.h>
+
 #include "Shader.h"
 #include "CameraInterface.h"
 
 namespace Scene {
 
-
 static const std::string map_name = "assets/Map2/Scene.gltf";
 
 static const std::string ShaderDir = "shaders/";
-static const std::string MeshDir = "assets/";
-static const std::string TextureDir = "assets/";
 
 // This structure mirrors the uniform block declared in the shader
 struct SceneUniforms {
@@ -50,7 +47,7 @@ inline MaterialUniforms MaterialData;
 
 struct ControllerState {
     glm::vec2 trackpad_left = glm::vec2(0.f, 0.f);
-    glm::vec2 trackpad_right{};
+    glm::vec2 trackpad_right {};
 
     bool trackpadClick_left = false;
     bool trackpadClick_right = false;
@@ -74,15 +71,9 @@ static int model_opt = 0;
 
 namespace UboBinding {
     // These values come from the binding value specified in the shader block layout
-    static const int scene = 0;
+    //    static const int scene = 0;
     static const int light = 1;
     static const int material = 2;
-}
-
-// Locations for the uniforms which are not in uniform blocks
-namespace UniformLocs {
-    static const int M = 0; // model matrix
-    static const int time = 1;
 }
 
 // IDs for the buffer objects holding the uniform block data
@@ -106,20 +97,7 @@ static const std::string bunny_model = "assets/Characters/bunny/bunny_crawl.gltf
 inline Pawn gFreddy;
 inline Pawn gBunny;
 
-inline std::shared_ptr<SkinnedMesh> gMapMesh;
-
-//static const std::string fish_mesh_name = "assets/Amago0.obj";
-//static const std::string fish_texture_name = "assets/AmagoT.bmp";
-
-// Shaders
-static const std::string vertex_shader("template.vert");
-static const std::string fragment_shader("template.frag");
-
-static const std::string skinned_vertex_shader("skinning.vert");
-static const std::string skinned_fragment_shader("skinning.frag");
-
-inline std::shared_ptr<Shader> shader_program;
-inline std::shared_ptr<Shader> skinned_shader_program;
+inline std::shared_ptr<StaticMesh> gMapMesh;
 
 inline std::unique_ptr<ICameraInterface> camera;
 

@@ -5,6 +5,13 @@
 
 namespace GlfwCallbacks {
 
+// mouse logic
+inline bool captureCursor = false;
+inline bool firstMouseEnter = true;
+
+inline double mouse_last_x = 0.0f;
+inline double mouse_last_y = 0.0f;
+
 void Register(GLFWwindow* window);
 void Keyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
 void MouseCursor(GLFWwindow* window, double x, double y);
