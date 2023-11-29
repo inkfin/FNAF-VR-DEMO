@@ -2,6 +2,7 @@
 #define __GAME_H__
 
 #include <Windows.h>
+#include "JsonConfig.h"
 
 // handle game logic here
 namespace Game {

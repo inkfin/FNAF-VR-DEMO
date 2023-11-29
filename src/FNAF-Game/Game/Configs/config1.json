@@ -1,0 +1,21 @@
+{
+    "freddy_position_x":1.1,
+    "freddy_position_y":2.2,
+    "freddy_position_z":3.3,
+    "freddy_rotation_x":4.4,
+    "freddy_rotation_y":5.5,
+    "freddy_rotation_z":6.6,
+    "freddy_scale_x":7.7,
+    "freddy_scale_y":8.7,
+    "freddy_scale_z":9.9,
+
+    "bunny_position_x":10.10,
+    "bunny_position_y":11.11,
+    "bunny_position_z":12.12,
+    "bunny_rotation_x":13.13,
+    "bunny_rotation_y":14.14,
+    "bunny_rotation_z":15.15,
+    "bunny_scale_x":16.16,
+    "bunny_scale_y":17.17,
+    "bunny_scale_z":18.18
+}

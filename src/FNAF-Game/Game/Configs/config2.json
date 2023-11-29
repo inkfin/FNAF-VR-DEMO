@@ -1,0 +1,20 @@
+{
+    "bunny_position_x": 10.100000381469727,
+    "bunny_position_y": 11.109999656677246,
+    "bunny_position_z": 12.119999885559082,
+    "bunny_rotation_x": 13.130000114440918,
+    "bunny_rotation_y": 14.140000343322754,
+    "bunny_rotation_z": 15.149999618530273,
+    "bunny_scale_x": 16.15999984741211,
+    "bunny_scale_y": 17.170000076293945,
+    "bunny_scale_z": 18.18000030517578,
+    "freddy_position_x": 1.100000023841858,
+    "freddy_position_y": 2.200000047683716,
+    "freddy_position_z": 3.299999952316284,
+    "freddy_rotation_x": 4.400000095367432,
+    "freddy_rotation_y": 5.5,
+    "freddy_rotation_z": 6.599999904632568,
+    "freddy_scale_x": 7.699999809265137,
+    "freddy_scale_y": 8.699999809265137,
+    "freddy_scale_z": 9.899999618530273
+}

@@ -1,0 +1,20 @@
+{
+    "bunny_position_x": -1.7868599891662598,
+    "bunny_position_y": -5.0,
+    "bunny_position_z": -20.770299911499023,
+    "bunny_rotation_x": -5.0,
+    "bunny_rotation_y": -100.0,
+    "bunny_rotation_z": -5.0,
+    "bunny_scale_x": 0.01600000075995922,
+    "bunny_scale_y": -0.01600000075995922,
+    "bunny_scale_z": -0.01600000075995922,
+    "freddy_position_x": -1.7868599891662598,
+    "freddy_position_y": 3.0,
+    "freddy_position_z": -30.770299911499023,
+    "freddy_rotation_x": 180.0,
+    "freddy_rotation_y": 0.0,
+    "freddy_rotation_z": 0.0,
+    "freddy_scale_x": 0.5,
+    "freddy_scale_y": -0.5,
+    "freddy_scale_z": -0.5
+}

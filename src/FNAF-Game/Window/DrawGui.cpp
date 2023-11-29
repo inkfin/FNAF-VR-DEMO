@@ -4,6 +4,7 @@
 
 #include "DrawGui.h"
 #include <Game/GlobalObjects.h>
+#include "Game/JsonConfig.h"
 
 bool DrawGui::HideGui = false;
 
@@ -91,6 +92,11 @@ void Display(GLFWwindow* window)
         ImGui::RadioButton("Debug", &mode, 2);
 
         glUniform1i(UniformLoc::Mode, mode);
+
+        // set a button, click to record current camera position
+        if (ImGui::Button("Record Characters config")) {
+                JsonConfig::recordConfig("E:\\0-workspace\\CGP\\Project\\FNAF-VR-DEMO\\src\\FNAF-Game\\Game\\Configs\\config.json");
+        }
 
         ImGui::End();
     }

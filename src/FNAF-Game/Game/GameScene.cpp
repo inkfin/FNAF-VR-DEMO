@@ -10,12 +10,10 @@
 #include "GlobalObjects.h"
 #include "Game.h"
 
-
 using namespace Scene;
 
 void GameScene::ModelInit()
 {
-
     // initialize map
     gMapMesh = std::make_shared<SkinnedMesh>();
     gMapMesh->LoadMesh(map_name);
@@ -102,6 +100,10 @@ void GameScene::Idle()
     gBunny.mMesh->Update(time_sec);
 
     skinned_shader_program->setUniform("time", time_sec);
+
+    if (gControllerState.trackpadClick_left) {
+        JsonConfig::recordConfig("E:\\0-workspace\\CGP\\Project\\FNAF-VR-DEMO\\src\\FNAF-Game\\Game\\Configs\\config_vr1.json");
+    }
 
     // Pawn
 }
