@@ -128,12 +128,12 @@ void Shader::sReloadAll()
    }
 }
 
-int Shader::GetUniformLocation(const char* name)
+int Shader::GetUniformLocation(const char* name) const
 {
    return glGetUniformLocation(mShader, name);
 }
 
-void Shader::UseProgram()
+void Shader::UseProgram() const
 {
    glUseProgram(mShader);
 }

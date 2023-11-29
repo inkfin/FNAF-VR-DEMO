@@ -5,6 +5,7 @@
 #include <Shader.h>
 #include "Scene.h"
 #include "Camera.h"
+#include "imgui.h"
 
 #include <Window/GlfwCallbacks.h>
 #include <Window/DrawGui.h>
@@ -101,10 +102,10 @@ void GlfwCallbacks::Keyboard(GLFWwindow* window, int key, int scancode, int acti
     if (action == GLFW_PRESS) {
         switch (key) {
         case GLFW_KEY_ESCAPE:
-            if (Scene::captureCursor) {
+            if (captureCursor) {
                 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-                Scene::captureCursor = false;
-                Scene::firstMouseEnter = true;
+                captureCursor = false;
+                firstMouseEnter = true;
             } else {
                 glfwSetWindowShouldClose(window, GLFW_TRUE);
             }
@@ -121,34 +122,33 @@ void GlfwCallbacks::Keyboard(GLFWwindow* window, int key, int scancode, int acti
 void GlfwCallbacks::MouseCursor(GLFWwindow* window, double xpos, double ypos)
 {
     // std::cout << "cursor pos: " << xpos << ", " << ypos << std::endl;
-    if (!Scene::captureCursor)
+    if (!captureCursor)
         return;
-    if (Scene::firstMouseEnter) {
-        Scene::mouse_last_x = xpos;
-        Scene::mouse_last_y = ypos;
-        Scene::firstMouseEnter = false;
+    if (firstMouseEnter) {
+        mouse_last_x = xpos;
+        mouse_last_y = ypos;
+        firstMouseEnter = false;
         return;
     }
-    // std::cout << "cursor pos: " << x << ", " << y << std::endl;
     auto* pCamera = dynamic_cast<Camera*>(Scene::camera.get());
     if (pCamera) {
-        pCamera->ProcessMouseMovement(xpos - Scene::mouse_last_x, -(ypos - Scene::mouse_last_y));
-        Scene::mouse_last_x = xpos;
-        Scene::mouse_last_y = ypos;
+        pCamera->ProcessMouseMovement(xpos - mouse_last_x, -(ypos - mouse_last_y));
+        mouse_last_x = xpos;
+        mouse_last_y = ypos;
     }
 }
 
 // This function gets called when a mouse button is pressed.
 void GlfwCallbacks::MouseButton(GLFWwindow* window, int button, int action, int mods)
 {
+    // std::cout << "button : "<< button << ", action: " << action << ", mods: " << mods << std::endl;
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        if (!Scene::captureCursor) {
+        if (!captureCursor && !ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            Scene::captureCursor = true;
+            captureCursor = true;
             return;
         }
     }
-    // std::cout << "button : "<< button << ", action: " << action << ", mods: " << mods << std::endl;
 }
 
 void GlfwCallbacks::MouseScroll(GLFWwindow* window, double xoffset, double yoffset)

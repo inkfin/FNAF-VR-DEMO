@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include <LoadTexture.h>
-#include <InitShader.h>
 #include <Shader.h>
 
 #include "Game/GameScene.h"

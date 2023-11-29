@@ -15,8 +15,7 @@
 #include "Window/GlfwWindow.h"
 #include "Game/GlobalObjects.h"
 #include "Objects/Pawn.h"
-#include "Objects/SkinnedMesh.h"
-
+#include "Objects/StaticMesh.h"
 
 class MeshBase;
 

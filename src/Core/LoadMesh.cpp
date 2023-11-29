@@ -4,8 +4,6 @@
 #include <filesystem>
 
 #include <GL/glew.h>
-#include "assimp/Importer.hpp"
-#include "assimp/PostProcess.h"
 
 // Create an instance of the Importer class
 Assimp::Importer gImporter;
@@ -340,7 +338,7 @@ void BufferIndexedVerts(MeshData& meshdata)
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void SubmeshData::DrawSubmesh()
+void SubMeshData::DrawSubmesh()
 {
    glDrawElementsBaseVertex(GL_TRIANGLES, mNumIndices, GL_UNSIGNED_INT, (void*)(sizeof(unsigned int)*mBaseIndex), mBaseVertex);
 }

@@ -16,7 +16,7 @@
 class Camera : public ICameraInterface {
 public:
     // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
-    enum Camera_Movement {
+    enum class CameraMovement {
         FORWARD,
         BACKWARD,
         LEFT,
@@ -29,7 +29,7 @@ public:
     static constexpr float YAW = -90.0f;
     static constexpr float PITCH = 0.0f;
     static constexpr float SPEED = 2.5f;
-    static constexpr float SENSITIVITY = 0.1f;
+    static constexpr float SENSITIVITY = 0.05f;
     static constexpr float ZOOM = 45.0f;
 
     bool move_forward_flag = false;
@@ -85,20 +85,20 @@ public:
     }
 
     // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-    void ProcessKeyboard(Camera_Movement direction, double deltaTime)
+    void ProcessKeyboard(CameraMovement direction, double deltaTime)
     {
         float velocity = MovementSpeed * (float)deltaTime;
-        if (direction == FORWARD)
+        if (direction == CameraMovement::FORWARD)
             Position += Front * velocity;
-        if (direction == BACKWARD)
+        if (direction == CameraMovement::BACKWARD)
             Position -= Front * velocity;
-        if (direction == LEFT)
+        if (direction == CameraMovement::LEFT)
             Position -= Right * velocity;
-        if (direction == RIGHT)
+        if (direction == CameraMovement::RIGHT)
             Position += Right * velocity;
-        if (direction == UP)
+        if (direction == CameraMovement::UP)
             Position += Up * velocity;
-        if (direction == DOWN)
+        if (direction == CameraMovement::DOWN)
             Position -= Up * velocity;
     }
 
@@ -137,22 +137,22 @@ public:
     {
         // handle movements
         if (move_forward_flag && !move_back_flag) {
-            ProcessKeyboard(FORWARD, deltaTime);
+            ProcessKeyboard(CameraMovement::FORWARD, deltaTime);
         }
         if (move_back_flag && !move_forward_flag) {
-            ProcessKeyboard(BACKWARD, deltaTime);
+            ProcessKeyboard(CameraMovement::BACKWARD, deltaTime);
         }
         if (move_right_flag && !move_left_flag) {
-            ProcessKeyboard(RIGHT, deltaTime);
+            ProcessKeyboard(CameraMovement::RIGHT, deltaTime);
         }
         if (move_left_flag && !move_right_flag) {
-            ProcessKeyboard(LEFT, deltaTime);
+            ProcessKeyboard(CameraMovement::LEFT, deltaTime);
         }
         if (move_up_flag && !move_down_flag) {
-            ProcessKeyboard(UP, deltaTime);
+            ProcessKeyboard(CameraMovement::UP, deltaTime);
         }
         if (move_down_flag && !move_up_flag) {
-            ProcessKeyboard(DOWN, deltaTime);
+            ProcessKeyboard(CameraMovement::DOWN, deltaTime);
         }
 
         // update shader eye position

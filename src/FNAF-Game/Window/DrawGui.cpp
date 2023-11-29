@@ -91,7 +91,7 @@ void Display(GLFWwindow* window)
         ImGui::RadioButton("LBS", &mode, 1);
         ImGui::RadioButton("Debug", &mode, 2);
 
-        glUniform1i(AnimeMesh::UniformLoc::Mode, mode);
+        glUniform1i(SkinnedMesh::UniformLoc::Mode, mode);
 
         ImGui::End();
     }

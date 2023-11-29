@@ -1,4 +1,4 @@
-// Based on the tutorial at
+﻿// Based on the tutorial at
 // https://ogldev.org/www/tutorial38/tutorial38.html
 
 // Modifications
@@ -9,12 +9,14 @@
 //  Eliminate SetBoneTransform() - send all matrices in one glUniform call
 //  Pass strings by reference
 
-#include <assert.h>
+#include <cassert>
 
 #include "LoadTexture.h"
+#include "Shader.h"
 
-#include "MeshBase.h"
 #include "SkinnedMesh.h"
+
+Shader* SkinnedMesh::mShader = nullptr;
 
 void SkinnedMesh::VertexBoneData::AddBoneData(unsigned int BoneID, float Weight)
 {
@@ -33,10 +35,10 @@ void SkinnedMesh::VertexBoneData::AddBoneData(unsigned int BoneID, float Weight)
 
 SkinnedMesh::SkinnedMesh()
 {
-    m_VAO = 0;
-    memset(m_Buffers, 0, sizeof(m_Buffers));
-    m_NumBones = 0;
-    mScene = NULL;
+    if (mShader == nullptr) {
+        mShader = new Shader(anime_vertex_shader, anime_fragment_shader);
+        mShader->Init();
+    }
 }
 
 SkinnedMesh::~SkinnedMesh()
@@ -63,57 +65,16 @@ void SkinnedMesh::Clear()
     }
 }
 
-void SkinnedMesh::CalcMeshBoundingBox(const aiMesh* mesh, aiVector3D* min, aiVector3D* max)
-{
-    min->x = min->y = min->z = 1e10f;
-    max->x = max->y = max->z = -1e10f;
-
-    for (unsigned int t = 0; t < mesh->mNumVertices; ++t) {
-        aiVector3D tmp = mesh->mVertices[t];
-
-        min->x = std::min(min->x, tmp.x);
-        min->y = std::min(min->y, tmp.y);
-        min->z = std::min(min->z, tmp.z);
-
-        max->x = std::max(max->x, tmp.x);
-        max->y = std::max(max->y, tmp.y);
-        max->z = std::max(max->z, tmp.z);
-    }
-}
-
-void SkinnedMesh::CalcNodeBoundingBox(const aiNode* nd, aiVector3D* min, aiVector3D* max)
-{
-    for (unsigned int n = 0; n < nd->mNumMeshes; ++n) {
-        const aiMesh* mesh = mScene->mMeshes[nd->mMeshes[n]];
-        for (unsigned int t = 0; t < mesh->mNumVertices; ++t) {
-
-            aiVector3D tmp = mesh->mVertices[t];
-
-            min->x = std::min(min->x, tmp.x);
-            min->y = std::min(min->y, tmp.y);
-            min->z = std::min(min->z, tmp.z);
-
-            max->x = std::max(max->x, tmp.x);
-            max->y = std::max(max->y, tmp.y);
-            max->z = std::max(max->z, tmp.z);
-        }
-    }
-
-    for (unsigned int n = 0; n < nd->mNumChildren; ++n) {
-        CalcNodeBoundingBox(nd->mChildren[n], min, max);
-    }
-}
-
 void SkinnedMesh::CalcBoundingBox()
 {
     mBbMin.x = mBbMin.y = mBbMin.z = 1e10f;
     mBbMax.x = mBbMax.y = mBbMax.z = -1e10f;
-    CalcNodeBoundingBox(mScene->mRootNode, &mBbMin, &mBbMax);
+    CalcNodeBoundingBox(mScene->mRootNode, mBbMin, mBbMax);
 
-    aiVector3D diff = mBbMax - mBbMin;
+    glm::vec3 diff = mBbMax - mBbMin;
     float w = std::max(diff.x, std::max(diff.y, diff.z));
 
-    mScaleFactor = 1.0f / w;
+    mScale = glm::vec3(1.0f / w);
 }
 
 bool SkinnedMesh::LoadMesh(const std::string& filename)
@@ -130,17 +91,19 @@ bool SkinnedMesh::LoadMesh(const std::string& filename)
 
     bool ret = false;
 
+    std::string fullPath = filename;
+    std::replace(fullPath.begin(), fullPath.end(), '/', '\\');
+
     // aiProcessPreset_TargetRealtime_Quality includes aiProcess_LimitBoneWeights which restricts bones per vertex to 4
-    // AssetLoader loader;
-    mScene = mImporter.ReadFile(filename.c_str(), aiProcessPreset_TargetRealtime_Quality | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
+    mScene = mImporter.ReadFile(fullPath.c_str(), aiProcessPreset_TargetRealtime_Quality | aiProcess_FlipUVs);
 
     if (mScene) {
         m_GlobalInverseTransform = mScene->mRootNode->mTransformation;
         m_GlobalInverseTransform.Inverse();
-        ret = InitFromScene(mScene, filename.c_str());
+        ret = InitFromScene(mScene, fullPath);
         CalcBoundingBox();
     } else {
-        printf("Error parsing '%s': '%s'\n", filename.c_str(), mImporter.GetErrorString());
+        printf("Error parsing '%s': '%s'\n", fullPath.c_str(), mImporter.GetErrorString());
     }
 
     // Make sure the VAO is not changed from the outside
@@ -152,6 +115,34 @@ bool SkinnedMesh::LoadMesh(const std::string& filename)
 void SkinnedMesh::Update(float deltaSeconds)
 {
     BoneTransform(deltaSeconds, mTransforms);
+}
+
+void SkinnedMesh::Render()
+{
+    glUniform1i(UniformLoc::NumBones, m_NumBones);
+    glUniformMatrix4fv(UniformLoc::Bones, mTransforms.size(), GL_TRUE, &mTransforms[0].a1);
+
+    glBindVertexArray(m_VAO);
+
+    for (unsigned int i = 0; i < m_Entries.size(); i++) {
+        const unsigned int MaterialIndex = m_Entries[i].MaterialIndex;
+
+        assert(MaterialIndex < m_Textures.size());
+
+        if (m_Textures[MaterialIndex]) {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, m_Textures[MaterialIndex]);
+        }
+
+        glDrawElementsBaseVertex(GL_TRIANGLES,
+            m_Entries[i].NumIndices,
+            GL_UNSIGNED_INT,
+            (void*)(sizeof(unsigned int) * m_Entries[i].BaseIndex),
+            m_Entries[i].BaseVertex);
+    }
+
+    // Make sure the VAO is not changed from the outside
+    glBindVertexArray(0);
 }
 
 bool SkinnedMesh::InitFromScene(const aiScene* pScene, const std::string& Filename)
@@ -198,29 +189,29 @@ bool SkinnedMesh::InitFromScene(const aiScene* pScene, const std::string& Filena
 
     // Generate and populate the buffers with vertex attributes and the indices
     glBindBuffer(GL_ARRAY_BUFFER, m_Buffers[POS_VB]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Positions[0]) * Positions.size(), &Positions[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Positions[0]) * Positions.size(), Positions.data(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(AttribLoc::Pos);
-    glVertexAttribPointer(AttribLoc::Pos, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(AttribLoc::Pos, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_Buffers[TEXCOORD_VB]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(TexCoords[0]) * TexCoords.size(), &TexCoords[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(TexCoords[0]) * TexCoords.size(), TexCoords.data(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(AttribLoc::TexCoord);
-    glVertexAttribPointer(AttribLoc::TexCoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(AttribLoc::TexCoord, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_Buffers[NORMAL_VB]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Normals[0]) * Normals.size(), &Normals[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Normals[0]) * Normals.size(), Normals.data(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(AttribLoc::Normal);
-    glVertexAttribPointer(AttribLoc::Normal, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(AttribLoc::Normal, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_Buffers[BONE_VB]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Bones[0]) * Bones.size(), &Bones[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Bones[0]) * Bones.size(), Bones.data(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(AttribLoc::BoneIds);
-    glVertexAttribIPointer(AttribLoc::BoneIds, 4, GL_UNSIGNED_BYTE, sizeof(VertexBoneData), (const GLvoid*)0);
+    glVertexAttribIPointer(AttribLoc::BoneIds, 4, GL_UNSIGNED_BYTE, sizeof(VertexBoneData), (const GLvoid*)nullptr);
     glEnableVertexAttribArray(AttribLoc::BoneWeights);
     glVertexAttribPointer(AttribLoc::BoneWeights, 4, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (const GLvoid*)(NUM_BONES_PER_VERTEX * sizeof(unsigned char)));
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Buffers[INDEX_BUFFER]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices[0]) * Indices.size(), &Indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices[0]) * Indices.size(), Indices.data(), GL_STATIC_DRAW);
 
     return true;
 }
@@ -246,7 +237,7 @@ void SkinnedMesh::InitMesh(unsigned int MeshIndex,
         TexCoords.push_back(aiVector2D(pTexCoord->x, pTexCoord->y));
     }
 
-    //LoadBones(MeshIndex, pMesh, Bones);
+    LoadBones(MeshIndex, pMesh, Bones);
 
     // Populate the index buffer
     for (unsigned int i = 0; i < pMesh->mNumFaces; i++) {
@@ -288,13 +279,13 @@ void SkinnedMesh::LoadBones(unsigned int MeshIndex, const aiMesh* pMesh, std::ve
 bool SkinnedMesh::InitMaterials(const aiScene* pScene, const std::string& Filename)
 {
     // Extract the directory part from the file name
-    std::string::size_type SlashIndex = Filename.find_last_of("/");
+    std::string::size_type SlashIndex = Filename.find_last_of('\\');
     std::string Dir;
 
     if (SlashIndex == std::string::npos) {
         Dir = ".";
     } else if (SlashIndex == 0) {
-        Dir = "/";
+        Dir = "\\";
     } else {
         Dir = Filename.substr(0, SlashIndex);
     }
@@ -322,40 +313,15 @@ bool SkinnedMesh::InitMaterials(const aiScene* pScene, const std::string& Filena
 
                 std::string FullPath = Dir + "/" + p;
 
-                m_Textures[i] = LoadTexture(FullPath.c_str());
+                m_Textures[i] = LoadTexture(FullPath);
+                if (m_Textures[i] == -1) {
+                    Ret = false;
+                }
             }
         }
     }
 
     return Ret;
-}
-
-void SkinnedMesh::Render()
-{
-    //glUniform1i(UniformLoc::NumBones, m_NumBones);
-    //glUniformMatrix4fv(UniformLoc::Bones, mTransforms.size(), GL_TRUE, &mTransforms[0].a1);
-
-    glBindVertexArray(m_VAO);
-
-    for (unsigned int i = 0; i < m_Entries.size(); i++) {
-        const unsigned int MaterialIndex = m_Entries[i].MaterialIndex;
-
-        assert(MaterialIndex < m_Textures.size());
-
-        if (m_Textures[MaterialIndex]) {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, m_Textures[MaterialIndex]);
-        }
-
-        glDrawElementsBaseVertex(GL_TRIANGLES,
-            m_Entries[i].NumIndices,
-            GL_UNSIGNED_INT,
-            (void*)(sizeof(unsigned int) * m_Entries[i].BaseIndex),
-            m_Entries[i].BaseVertex);
-    }
-
-    // Make sure the VAO is not changed from the outside
-    glBindVertexArray(0);
 }
 
 unsigned int SkinnedMesh::FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim)
@@ -541,6 +507,6 @@ const aiNodeAnim* SkinnedMesh::FindNodeAnim(const aiAnimation* pAnimation, const
             return pNodeAnim;
         }
     }
-    mNodeMap[NodeName] = NULL;
-    return NULL;
+    mNodeMap[NodeName] = nullptr;
+    return nullptr;
 }

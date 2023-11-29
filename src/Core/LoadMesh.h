@@ -7,14 +7,14 @@
 #include <GL/glew.h>
 #include "assimp/Scene.h"
 #include "assimp/PostProcess.h"
+#include "assimp/Importer.hpp"
 
-struct SubmeshData
-{
+struct SubMeshData {
    unsigned int mNumIndices;
    unsigned int mBaseIndex;
    unsigned int mBaseVertex;
 
-   SubmeshData() : mNumIndices(0), mBaseIndex(0), mBaseVertex(0) {}
+   SubMeshData() : mNumIndices(0), mBaseIndex(0), mBaseVertex(0) {}
    void DrawSubmesh();
 };
 
@@ -32,7 +32,7 @@ struct MeshData
    const aiScene* mScene;
    aiVector3D mBbMin, mBbMax;
 
-   std::vector<SubmeshData> mSubmesh;
+   std::vector<SubMeshData> mSubmesh;
    std::string mFilename;
 
    MeshData() : mVao(-1), mVboVerts(-1), mVboNormals(-1), mVboTexCoords(-1), mIndexBuffer(-1), mScaleFactor(0.0f), mScene(nullptr) {}
@@ -47,6 +47,5 @@ MeshData LoadMesh(const std::string& pFile);
 bool ValidMeshFilename(const std::string& fname);
 void SetMeshDir(std::string dir);
 std::string GetMeshDir();
-
 
 #endif

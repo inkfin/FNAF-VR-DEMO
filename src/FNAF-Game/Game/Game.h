@@ -1,7 +1,4 @@
-#ifndef __GAME_H__
-#define __GAME_H__
-
-#include <Windows.h>
+#pragma once
 
 // handle game logic here
 namespace Game {
@@ -14,5 +11,3 @@ void UpdateFixedStep();
 void Shutdown();
 
 }
-
-#endif // !__GAME_H__

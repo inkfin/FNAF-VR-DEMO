@@ -10,22 +10,21 @@
 #include "GlobalObjects.h"
 #include "Game.h"
 
-
 using namespace Scene;
 
 void GameScene::ModelInit()
 {
 
     // initialize map
-    gMapMesh = std::make_shared<SkinnedMesh>();
+    gMapMesh = std::make_shared<StaticMesh>();
     gMapMesh->LoadMesh(map_name);
 
     gMapMesh->mTranslation = map_position;
-    gMapMesh->mScale= glm::vec3(1.f, 1.f, 1.f);
+    gMapMesh->mScale = glm::vec3(1.f, 1.f, 1.f);
     gMapMesh->mRotation = map_rotation;
 
     // initialize freddy
-    gFreddy.mMesh = std::make_unique<AnimeMesh>();
+    gFreddy.mMesh = std::make_unique<SkinnedMesh>();
     gFreddy.mMesh->LoadMesh(freddy_model);
 
     gFreddy.mMesh->mTranslation = freddy_position;
@@ -33,7 +32,7 @@ void GameScene::ModelInit()
     gFreddy.mMesh->mScale = glm::vec3(0.5f, -0.5f, -0.5f);
 
     // initialize bunny
-    gBunny.mMesh = std::make_unique<AnimeMesh>();
+    gBunny.mMesh = std::make_unique<SkinnedMesh>();
     gBunny.mMesh->LoadMesh(bunny_model);
 
     gBunny.mMesh->mTranslation = bunny_position;
@@ -41,18 +40,9 @@ void GameScene::ModelInit()
     gBunny.mMesh->mScale = glm::vec3(0.016f, -0.016f, -0.016f);
 }
 
-void GameScene::ShaderInit() {
-
-    skinned_shader_program = std::make_shared<Shader>(skinned_vertex_shader.c_str(), skinned_fragment_shader.c_str());
-    skinned_shader_program->Init();
-
-}
-
 void GameScene::Init()
 {
     SetShaderDir(ShaderDir);
-    //SetMeshDir(MeshDir);
-    //SetTextureDir(TextureDir);
 
 #pragma region OpenGL initial state
     // glClearColor(SceneData.clear_color.r, SceneData.clear_color.g, SceneData.clear_color.b, SceneData.clear_color.a);
@@ -92,8 +82,6 @@ void GameScene::Init()
 
     ModelInit();
 
-    ShaderInit();
-
     //    DebugDraw::Init();
 
     // glGetIntegerv(GL_VIEWPORT, &SceneData.Viewport[0]);
@@ -102,8 +90,8 @@ void GameScene::Init()
     // DrawGui::InitVr();
 }
 
-
-void GameScene::Render() {
+void GameScene::Render()
+{
 
     // Copy buffer to GPU
     glBindBuffer(GL_UNIFORM_BUFFER, light_ubo);
@@ -112,35 +100,42 @@ void GameScene::Render() {
     glBindBuffer(GL_UNIFORM_BUFFER, material_ubo);
     glBufferData(GL_UNIFORM_BUFFER, sizeof(MaterialUniforms), &MaterialData, GL_STREAM_DRAW);
 
-    skinned_shader_program->UseProgram();
+    Shader* pShader;
 
-    skinned_shader_program->setUniform("PV", SceneData.PV);
-    skinned_shader_program->setUniform("M", gMapMesh->GetModelMatrix());
-    skinned_shader_program->setUniform("Mode", 0);
-    skinned_shader_program->setUniform("eye_w", SceneData.eye_w);
+    // render Scene
+    pShader = StaticMesh::sShader();
+    pShader->UseProgram();
+
+    pShader->setUniform("PV", SceneData.PV);
+    pShader->setUniform("eye_w", SceneData.eye_w);
+
+    pShader->setUniform("M", gMapMesh->GetModelMatrix());
+    pShader->setUniform("Mode", 0);
     gMapMesh->Render();
 
+    // render Anime Mesh
+    pShader = SkinnedMesh::sShader();
+    pShader->UseProgram();
+
+    pShader->setUniform("PV", SceneData.PV);
+    pShader->setUniform("eye_w", SceneData.eye_w);
+
     // Freddy
-    skinned_shader_program->setUniform("PV", SceneData.PV);
-    skinned_shader_program->setUniform("M", gFreddy.GetModelMatrix());
-    skinned_shader_program->setUniform("Mode", 1);
-    skinned_shader_program->setUniform("eye_w", SceneData.eye_w);
+    pShader->setUniform("M", gFreddy.GetModelMatrix());
+    pShader->setUniform("Mode", 1);
     gFreddy.mMesh->Render();
 
     // Bunny
-    skinned_shader_program->setUniform("PV", SceneData.PV);
-    skinned_shader_program->setUniform("M", gBunny.GetModelMatrix());
-    skinned_shader_program->setUniform("Mode", 1);
-    skinned_shader_program->setUniform("eye_w", SceneData.eye_w);
+    pShader->setUniform("M", gBunny.GetModelMatrix());
+    pShader->setUniform("Mode", 1);
     gBunny.mMesh->Render();
 
-//    DebugDraw::DrawAxis();
+    //    DebugDraw::DrawAxis();
 }
 
-void GameScene::RenderVR() {
-
+void GameScene::RenderVR()
+{
 }
-
 
 void GameScene::Idle()
 {
@@ -162,11 +157,11 @@ void GameScene::Idle()
     prev_time_sec = time_sec;
     time_passed += dt;
 
-//    gMapMesh->Update(time_sec);
+    //    gMapMesh->Update(time_sec);
     gFreddy.mMesh->Update(time_sec);
     gBunny.mMesh->Update(time_sec);
 
-    skinned_shader_program->setUniform("time", time_sec);
+    StaticMesh::sShader()->setUniform("time", time_sec);
 
     // Pawn
 }
