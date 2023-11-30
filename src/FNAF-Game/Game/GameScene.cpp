@@ -101,13 +101,9 @@ void GameScene::Idle()
 
     skinned_shader_program->setUniform("time", time_sec);
 
-    static int count = 1;
     if (gControllerState.trackpadClick_left) {
-        // According to XR click call back method, this will be called every frame when the button is clicked once and won't be called until the button is being clicked again.
-        // So mod 30 is reasonable to avoid too much config files.
-        std::string config_name = "config_vr_" + std::to_string(count % 60) + ".json";
+        std::string config_name = "config_vr.json";
         JsonConfig::RecordConfig(R"(Configs\)" + config_name);
-        count++;
     }
 
     // Pawn
