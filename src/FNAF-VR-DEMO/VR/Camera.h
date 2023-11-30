@@ -22,6 +22,7 @@ private:
     glm::vec3 mUp { 0.f, 1.f, 0.f };
 
     glm::vec3 mLocation { 0.f, 0.f, 0.f };
+    const glm::vec3 loc_offset { 0.0f, 0.0f, 1.0f };
     glm::mat4 mRotation { glm::identity<glm::mat4>() };
 
 public:
@@ -29,7 +30,7 @@ public:
 
     [[nodiscard]] glm::mat4 GetViewMatrix() const override
     {
-        glm::mat4 retView = mViewMatrixRaw * glm::translate(mLocation);
+        glm::mat4 retView = mViewMatrixRaw * glm::translate(-mLocation);
             return retView;
     }
 
@@ -50,7 +51,7 @@ public:
 
     [[nodiscard]] glm::vec3 GetLocation() const override
     {
-        return mLocation;
+        return mLocation + loc_offset;
     }
 
     static glm::mat4 RemoveScaleFromMatrix(const glm::mat4& matrix)
@@ -92,7 +93,7 @@ public:
     {
         const glm::vec2& p = Scene::gControllerState.trackpad_left;
         // get the correct direction input
-        glm::vec4 delta_pos(-p.x, 0.f, p.y, 0.f);
+        glm::vec4 delta_pos(p.x, 0.f, -p.y, 0.f);
 
         // get current camera orientation
         const glm::mat4 rotation = GetRotation();
@@ -104,6 +105,6 @@ public:
         mLocation += glm::vec3(delta_pos.x, delta_pos.y, delta_pos.z);
 
         // update shader eye position
-        Scene::SceneData.eye_w = glm::vec4(mLocation, 1.0f);
+        Scene::SceneData.eye_w = glm::vec4(GetLocation(), 1.0f);
     }
 };

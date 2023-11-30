@@ -69,12 +69,12 @@ void GameScene::Init()
     // Create and initialize uniform buffers
     glGenBuffers(1, &light_ubo);
     glBindBuffer(GL_UNIFORM_BUFFER, light_ubo);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(LightUniforms), nullptr, GL_STREAM_DRAW); // Allocate memory for the buffer, but don't copy (since pointer is null).
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(LightUniforms), &LightData, GL_STREAM_DRAW); // Allocate memory for the buffer, but don't copy (since pointer is null).
     glBindBufferBase(GL_UNIFORM_BUFFER, UboBinding::light, light_ubo); // Associate this uniform buffer with the uniform block in the shader that has the same binding.
 
     glGenBuffers(1, &material_ubo);
     glBindBuffer(GL_UNIFORM_BUFFER, material_ubo);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(MaterialUniforms), nullptr, GL_STREAM_DRAW); // Allocate memory for the buffer, but don't copy (since pointer is null).
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(MaterialUniforms), &MaterialData, GL_STREAM_DRAW); // Allocate memory for the buffer, but don't copy (since pointer is null).
     glBindBufferBase(GL_UNIFORM_BUFFER, UboBinding::material, material_ubo); // Associate this uniform buffer with the uniform block in the shader that has the same binding.
 
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -94,12 +94,12 @@ void GameScene::Init()
 void GameScene::Render()
 {
 
-    // Copy buffer to GPU
-    glBindBuffer(GL_UNIFORM_BUFFER, light_ubo);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(LightUniforms), &LightData, GL_STREAM_DRAW);
-
-    glBindBuffer(GL_UNIFORM_BUFFER, material_ubo);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(MaterialUniforms), &MaterialData, GL_STREAM_DRAW);
+//    // Copy buffer to GPU
+//    glBindBuffer(GL_UNIFORM_BUFFER, light_ubo);
+//    glBufferData(GL_UNIFORM_BUFFER, sizeof(LightUniforms), &LightData, GL_STREAM_DRAW);
+//
+//    glBindBuffer(GL_UNIFORM_BUFFER, material_ubo);
+//    glBufferData(GL_UNIFORM_BUFFER, sizeof(MaterialUniforms), &MaterialData, GL_STREAM_DRAW);
 
     Shader* pShader;
 

@@ -85,6 +85,7 @@ void Display(GLFWwindow* window)
         ImGui::Text("Camera position: (%.2f, %.2f, %.2f)", cam_pos.x, cam_pos.y, cam_pos.z);
         auto cam_forward = Scene::camera->GetForward();
         ImGui::Text("Camera position: (%.2f, %.2f, %.2f)", cam_forward.x, cam_forward.y, cam_forward.z);
+        ImGui::Text("Trackpad left, (%.2f, %.2f)", Scene::gControllerState.trackpad_left.x, Scene::gControllerState.trackpad_left.y);
 
         static int mode = 0;
         ImGui::Text("AnimeMesh Mode");
@@ -93,11 +94,6 @@ void Display(GLFWwindow* window)
         ImGui::RadioButton("Debug", &mode, 2);
 
         glUniform1i(SkinnedMesh::UniformLoc::Mode, mode);
-
-        // set a button, click to record current camera position
-        if (ImGui::Button("Record Characters config")) {
-            JsonConfig::RecordConfig("E:\\0-workspace\\CGP\\Project\\FNAF-VR-DEMO\\src\\FNAF-Game\\Game\\Configs\\config.json");
-        }
 
         ImGui::End();
     }
