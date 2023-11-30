@@ -46,6 +46,8 @@ add_executable(${PROJECT_NAME} ${SOURCE}
         ${XR_CORE_SRC}
         ${IMGUI_SRC}
         ${IMPLOT_SRC}
+        ../FNAF-Game/Game/JsonConfig.cpp
+        ../FNAF-Game/Game/JsonConfig.h
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC

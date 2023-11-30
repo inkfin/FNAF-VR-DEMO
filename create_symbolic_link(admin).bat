@@ -7,7 +7,7 @@ set "SCRIPT_DIR=%~dp0"
 echo "Script directory: !SCRIPT_DIR!"
 
 :: 定义源目录
-set "SOURCE_DIRS=assets shaders"
+set "SOURCE_DIRS=assets shaders Configs"
 set "TARGET_PARENT_DIRS=bin\FNAF_GL_DEMO\Release bin\FNAF_GL_DEMO\Debug bin\FNAF_VR_DEMO\Release bin\FNAF_VR_DEMO\Debug"
 
 :: 循环遍历所有源目录和目标父目录

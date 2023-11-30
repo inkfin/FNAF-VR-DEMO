@@ -95,7 +95,7 @@ void Display(GLFWwindow* window)
 
         // set a button, click to record current camera position
         if (ImGui::Button("Record Characters config")) {
-                JsonConfig::recordConfig("E:\\0-workspace\\CGP\\Project\\FNAF-VR-DEMO\\src\\FNAF-Game\\Game\\Configs\\config.json");
+            JsonConfig::RecordConfig("E:\\0-workspace\\CGP\\Project\\FNAF-VR-DEMO\\src\\FNAF-Game\\Game\\Configs\\config.json");
         }
 
         ImGui::End();

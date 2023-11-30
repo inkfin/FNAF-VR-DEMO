@@ -54,16 +54,28 @@ gameConfig JsonConfig::ReadConfig(const std::string& path) {
     return game_config;
 }
 
-void JsonConfig::recordConfig(const std::string& path) {
+void JsonConfig::RecordConfig(const std::string& path) {
     gameConfig config;
 
-    config.freddy.position = Scene::gFreddy.mMesh->mTranslation;
-    config.freddy.rotation = Scene::gFreddy.mMesh->mRotation;
-    config.freddy.scale = Scene::gFreddy.mMesh->mScale;
+    config.freddy.position = Scene::gFreddy.mTranslation;
+    config.freddy.rotation = Scene::gFreddy.mRotation;
+    config.freddy.scale = Scene::gFreddy.mScale;
 
-    config.bunny.position = Scene::gBunny.mMesh->mTranslation;
-    config.bunny.rotation = Scene::gBunny.mMesh->mRotation;
-    config.bunny.scale = Scene::gBunny.mMesh->mScale;
+    config.bunny.position = Scene::gBunny.mTranslation;
+    config.bunny.rotation = Scene::gBunny.mRotation;
+    config.bunny.scale = Scene::gBunny.mScale;
 
-    JsonConfig::WriteJson(path, config);
+    WriteJson(path, config);
+}
+
+void JsonConfig::LoadConfig(const std::string& path) {
+    gameConfig config = ReadConfig(path);
+
+    Scene::gFreddy.mTranslation = config.freddy.position;
+    Scene::gFreddy.mRotation = config.freddy.rotation;
+    Scene::gFreddy.mScale = config.freddy.scale;
+
+    Scene::gBunny.mTranslation = config.bunny.position;
+    Scene::gBunny.mRotation = config.bunny.rotation;
+    Scene::gBunny.mScale = config.bunny.scale;
 }

@@ -32,5 +32,7 @@ public:
 
     static gameConfig ReadConfig(const std::string& path);
 
-    static void recordConfig(const std::string& path);
+    static void RecordConfig(const std::string& path);
+
+    static void LoadConfig(const std::string& path);
 };

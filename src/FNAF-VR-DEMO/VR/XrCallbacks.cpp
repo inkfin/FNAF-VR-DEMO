@@ -75,7 +75,7 @@ void XrCallbacks::MenuClickEvent(int hand, bool click)
 void XrCallbacks::TrackpadClickEvent(int hand, bool click)
 {
     if (hand == 0) {
-        Scene::gControllerState.trackpadClick_left = click;
+        Scene::gControllerState.trackpadClick_left = ~Scene::gControllerState.trackpadClick_left;
     } else if (hand == 1) {
         Scene::gControllerState.trackpadClick_right = click;
     }
