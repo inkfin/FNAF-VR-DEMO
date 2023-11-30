@@ -102,5 +102,8 @@ public:
 
         delta_pos = delta_pos * speed * (float)deltaTime;
         mLocation += glm::vec3(delta_pos.x, delta_pos.y, delta_pos.z);
+
+        // update shader eye position
+        Scene::SceneData.eye_w = glm::vec4(mLocation, 1.0f);
     }
 };

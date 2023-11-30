@@ -87,11 +87,12 @@ void Display(GLFWwindow* window)
         ImGui::Text("Camera position: (%.2f, %.2f, %.2f)", cam_forward.x, cam_forward.y, cam_forward.z);
 
         static int mode = 0;
+        ImGui::Text("AnimeMesh Mode");
         ImGui::RadioButton("Rest pose", &mode, 0);
         ImGui::RadioButton("LBS", &mode, 1);
         ImGui::RadioButton("Debug", &mode, 2);
 
-        glUniform1i(UniformLoc::Mode, mode);
+        glUniform1i(SkinnedMesh::UniformLoc::Mode, mode);
 
         // set a button, click to record current camera position
         if (ImGui::Button("Record Characters config")) {

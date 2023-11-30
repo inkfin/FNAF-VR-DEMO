@@ -8,7 +8,6 @@
 namespace GameScene {
 
 void ModelInit();
-void ShaderInit();
 
 void Render();
 void RenderVR();

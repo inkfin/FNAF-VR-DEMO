@@ -48,7 +48,7 @@ GLuint LoadTexture(const std::string& fname0)
    FreeImage_Unload(img);
    
    glCreateTextures(GL_TEXTURE_2D, 1, &tex_id);
-   int levels = 1+floor(log2(glm::max(w,h)));
+   int levels = 1 + floor(log2(glm::max(w,h)));
    glTextureStorage2D(tex_id, levels, GL_RGBA8, w, h);
    glTextureSubImage2D(tex_id, 0, 0, 0, w, h, GL_BGRA, GL_UNSIGNED_BYTE, byteImg);
    glTextureParameterf(tex_id, GL_TEXTURE_WRAP_S, GL_REPEAT);
