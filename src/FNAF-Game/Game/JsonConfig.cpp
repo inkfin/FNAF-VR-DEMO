@@ -4,40 +4,43 @@
 
 #include "JsonConfig.h"
 
-json JsonConfig::LoadJson(const std::string& path) {
+json JsonConfig::LoadJson(const std::string& path)
+{
     std::ifstream f(path);
     return json::parse(f);
 }
 
-void JsonConfig::WriteJson(const std::string& path, gameConfig game_config) {
+void JsonConfig::WriteJson(const std::string& path, gameConfig game_config)
+{
     std::ofstream f(path);
 
     json config = {
-        {"freddy_position_x", game_config.freddy.position.x},
-        {"freddy_position_y", game_config.freddy.position.y},
-        {"freddy_position_z", game_config.freddy.position.z},
-        {"freddy_rotation_x", game_config.freddy.rotation.x},
-        {"freddy_rotation_y", game_config.freddy.rotation.y},
-        {"freddy_rotation_z", game_config.freddy.rotation.z},
-        {"freddy_scale_x", game_config.freddy.scale.x},
-        {"freddy_scale_y", game_config.freddy.scale.y},
-        {"freddy_scale_z", game_config.freddy.scale.z},
+        { "freddy_position_x", game_config.freddy.position.x },
+        { "freddy_position_y", game_config.freddy.position.y },
+        { "freddy_position_z", game_config.freddy.position.z },
+        { "freddy_rotation_x", game_config.freddy.rotation.x },
+        { "freddy_rotation_y", game_config.freddy.rotation.y },
+        { "freddy_rotation_z", game_config.freddy.rotation.z },
+        { "freddy_scale_x", game_config.freddy.scale.x },
+        { "freddy_scale_y", game_config.freddy.scale.y },
+        { "freddy_scale_z", game_config.freddy.scale.z },
 
-        {"bunny_position_x", game_config.bunny.position.x},
-        {"bunny_position_y", game_config.bunny.position.y},
-        {"bunny_position_z", game_config.bunny.position.z},
-        {"bunny_rotation_x", game_config.bunny.rotation.x},
-        {"bunny_rotation_y", game_config.bunny.rotation.y},
-        {"bunny_rotation_z", game_config.bunny.rotation.z},
-        {"bunny_scale_x", game_config.bunny.scale.x},
-        {"bunny_scale_y", game_config.bunny.scale.y},
-        {"bunny_scale_z", game_config.bunny.scale.z},
+        { "bunny_position_x", game_config.bunny.position.x },
+        { "bunny_position_y", game_config.bunny.position.y },
+        { "bunny_position_z", game_config.bunny.position.z },
+        { "bunny_rotation_x", game_config.bunny.rotation.x },
+        { "bunny_rotation_y", game_config.bunny.rotation.y },
+        { "bunny_rotation_z", game_config.bunny.rotation.z },
+        { "bunny_scale_x", game_config.bunny.scale.x },
+        { "bunny_scale_y", game_config.bunny.scale.y },
+        { "bunny_scale_z", game_config.bunny.scale.z },
     };
 
     f << config.dump(4);
 }
 
-gameConfig JsonConfig::ReadConfig(const std::string& path) {
+gameConfig JsonConfig::ReadConfig(const std::string& path)
+{
     std::ifstream f(path);
     json config = json::parse(f);
 
@@ -54,7 +57,8 @@ gameConfig JsonConfig::ReadConfig(const std::string& path) {
     return game_config;
 }
 
-void JsonConfig::RecordConfig(const std::string& path) {
+void JsonConfig::RecordConfig(const std::string& path)
+{
     gameConfig config;
 
     config.freddy.position = Scene::gFreddy.mTranslation;
@@ -68,7 +72,8 @@ void JsonConfig::RecordConfig(const std::string& path) {
     WriteJson(path, config);
 }
 
-void JsonConfig::LoadConfig(const std::string& path) {
+void JsonConfig::LoadConfig(const std::string& path)
+{
     gameConfig config = ReadConfig(path);
 
     Scene::gFreddy.mTranslation = config.freddy.position;
@@ -80,12 +85,14 @@ void JsonConfig::LoadConfig(const std::string& path) {
     Scene::gBunny.mScale = config.bunny.scale;
 }
 
-void JsonConfig::LoadBunnyConfig(const std::string& path) {
+void JsonConfig::LoadBunnyConfig(const std::string& path)
+{
     gameConfig config = ReadConfig(path);
     Scene::gBunny.mTranslation = config.bunny.position;
 }
 
-void JsonConfig::LoadFreddyConfig(const std::string& path) {
+void JsonConfig::LoadFreddyConfig(const std::string& path)
+{
     gameConfig config = ReadConfig(path);
     Scene::gFreddy.mTranslation = config.freddy.position;
 }

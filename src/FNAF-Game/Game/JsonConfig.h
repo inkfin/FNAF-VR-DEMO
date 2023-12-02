@@ -10,9 +10,9 @@
 using json = nlohmann::json;
 
 struct characterConfig {
-    glm::vec3 position{};
-    glm::vec3 rotation{};
-    glm::vec3 scale{};
+    glm::vec3 position {};
+    glm::vec3 rotation {};
+    glm::vec3 scale {};
     bool animated = false;
 };
 
@@ -38,5 +38,5 @@ public:
 
     static void LoadBunnyConfig(const std::string& path);
 
-        static void LoadFreddyConfig(const std::string& path);
+    static void LoadFreddyConfig(const std::string& path);
 };

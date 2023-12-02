@@ -4,6 +4,7 @@
 
 #include "DrawGui.h"
 #include <Game/GlobalObjects.h>
+#include "Objects/LightManager.h"
 #include "Game/JsonConfig.h"
 
 bool DrawGui::HideGui = false;
@@ -104,33 +105,33 @@ void Display(GLFWwindow* window)
             ImGui::Begin("Lights manager", &show_debug_window);
 
             ImGui::Text("====== Spot light ======");
-            ImGui::Checkbox("Use flash light", &Scene::use_flash_light);
-            ImGui::DragFloat3("Spot light direction", glm::value_ptr(Scene::spotLightData.direction), 0.1f);
-            ImGui::SliderFloat("Spot light cut off", &Scene::spotLightData.cutOff, 0.0f, 1.0f);
-            ImGui::DragFloat3("Spot light position", glm::value_ptr(Scene::spotLightData.position), 0.1f);
-            ImGui::ColorEdit3("Spot light ambient", glm::value_ptr(Scene::spotLightData.La));
-            ImGui::ColorEdit3("Spot light diffuse", glm::value_ptr(Scene::spotLightData.Ld));
-            ImGui::ColorEdit3("Spot light specular", glm::value_ptr(Scene::spotLightData.Ls));
-            ImGui::SliderFloat("Spot light constant", &Scene::spotLightData.constant, 0.0f, 1.0f);
-            ImGui::SliderFloat("Spot light linear", &Scene::spotLightData.linear, 0.0f, 0.1f);
-            ImGui::SliderFloat("Spot light quadratic", &Scene::spotLightData.quadratic, 0.0f, 0.01f);
+            ImGui::Checkbox("Use flash light", &LightManager::use_flash_light);
+            ImGui::DragFloat3("Spot light direction", glm::value_ptr(LightManager::spotLightData.direction), 0.1f);
+            ImGui::SliderFloat("Spot light cut off", &LightManager::spotLightData.cutOff, 0.0f, 1.0f);
+            ImGui::DragFloat3("Spot light position", glm::value_ptr(LightManager::spotLightData.position), 0.1f);
+            ImGui::ColorEdit3("Spot light ambient", glm::value_ptr(LightManager::spotLightData.La));
+            ImGui::ColorEdit3("Spot light diffuse", glm::value_ptr(LightManager::spotLightData.Ld));
+            ImGui::ColorEdit3("Spot light specular", glm::value_ptr(LightManager::spotLightData.Ls));
+            ImGui::SliderFloat("Spot light constant", &LightManager::spotLightData.constant, 0.0f, 1.0f);
+            ImGui::SliderFloat("Spot light linear", &LightManager::spotLightData.linear, 0.0f, 0.1f);
+            ImGui::SliderFloat("Spot light quadratic", &LightManager::spotLightData.quadratic, 0.0f, 0.01f);
 
             ImGui::Text("====== Point light =======");
-            ImGui::DragFloat3("Light 0 position", glm::value_ptr(Scene::pointLightData[0].position), 0.1f);
-            ImGui::ColorEdit3("Light 0 ambient", glm::value_ptr(Scene::pointLightData[0].La));
-            ImGui::ColorEdit3("Light 0 diffuse", glm::value_ptr(Scene::pointLightData[0].Ld));
-            ImGui::ColorEdit3("Light 0 specular", glm::value_ptr(Scene::pointLightData[0].Ls));
-            ImGui::SliderFloat("Light 0 constant", &Scene::pointLightData[0].constant, 0.0f, 1.0f);
-            ImGui::SliderFloat("Light 0 linear", &Scene::pointLightData[0].linear, 0.0f, 0.1f);
-            ImGui::SliderFloat("Light 0 quadratic", &Scene::pointLightData[0].quadratic, 0.0f, 0.01f);
+            ImGui::DragFloat3("Light 0 position", glm::value_ptr(LightManager::pointLightData[0].position), 0.1f);
+            ImGui::ColorEdit3("Light 0 ambient", glm::value_ptr(LightManager::pointLightData[0].La));
+            ImGui::ColorEdit3("Light 0 diffuse", glm::value_ptr(LightManager::pointLightData[0].Ld));
+            ImGui::ColorEdit3("Light 0 specular", glm::value_ptr(LightManager::pointLightData[0].Ls));
+            ImGui::SliderFloat("Light 0 constant", &LightManager::pointLightData[0].constant, 0.0f, 1.0f);
+            ImGui::SliderFloat("Light 0 linear", &LightManager::pointLightData[0].linear, 0.0f, 0.1f);
+            ImGui::SliderFloat("Light 0 quadratic", &LightManager::pointLightData[0].quadratic, 0.0f, 0.01f);
 
-            ImGui::DragFloat3("Light 1 position", glm::value_ptr(Scene::pointLightData[1].position), 0.1f);
-            ImGui::ColorEdit3("Light 1 ambient", glm::value_ptr(Scene::pointLightData[1].La));
-            ImGui::ColorEdit3("Light 1 diffuse", glm::value_ptr(Scene::pointLightData[1].Ld));
-            ImGui::ColorEdit3("Light 1 specular", glm::value_ptr(Scene::pointLightData[1].Ls));
-            ImGui::SliderFloat("Light 1 constant", &Scene::pointLightData[1].constant, 0.0f, 1.0f);
-            ImGui::SliderFloat("Light 1 linear", &Scene::pointLightData[1].linear, 0.0f, 0.1f);
-            ImGui::SliderFloat("Light 1 quadratic", &Scene::pointLightData[1].quadratic, 0.0f, 0.01f);
+            ImGui::DragFloat3("Light 1 position", glm::value_ptr(LightManager::pointLightData[1].position), 0.1f);
+            ImGui::ColorEdit3("Light 1 ambient", glm::value_ptr(LightManager::pointLightData[1].La));
+            ImGui::ColorEdit3("Light 1 diffuse", glm::value_ptr(LightManager::pointLightData[1].Ld));
+            ImGui::ColorEdit3("Light 1 specular", glm::value_ptr(LightManager::pointLightData[1].Ls));
+            ImGui::SliderFloat("Light 1 constant", &LightManager::pointLightData[1].constant, 0.0f, 1.0f);
+            ImGui::SliderFloat("Light 1 linear", &LightManager::pointLightData[1].linear, 0.0f, 0.1f);
+            ImGui::SliderFloat("Light 1 quadratic", &LightManager::pointLightData[1].quadratic, 0.0f, 0.01f);
 
             // ImGui::SliderFloat3("Directional light x", glm::value_ptr(Scene::dirLightData.position), -10.0f, 10.0f);
 
