@@ -90,6 +90,7 @@ void Game::UpdateDynamicStep(float deltaTime)
         else if (Scene::is_game_over) {
             DeadCase();
         }
+
         else {
             GeneraCase(deltaTime);
         }

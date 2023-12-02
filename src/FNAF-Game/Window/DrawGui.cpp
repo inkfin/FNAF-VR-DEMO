@@ -74,28 +74,68 @@ void Display(GLFWwindow* window)
 #pragma endregion
 
     if (show_debug_window) {
-        ImGui::Begin("Debug window", &show_debug_window);
-        if (ImGui::Button("Quit")) {
-            glfwSetWindowShouldClose(window, GLFW_TRUE);
+        {
+            ImGui::Begin("Debug window", &show_debug_window);
+            if (ImGui::Button("Quit")) {
+                glfwSetWindowShouldClose(window, GLFW_TRUE);
+            }
+
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+            auto cam_pos = Scene::camera->GetLocation();
+            ImGui::Text("Camera position: (%.2f, %.2f, %.2f)", cam_pos.x, cam_pos.y, cam_pos.z);
+            auto cam_forward = Scene::camera->GetForward();
+            ImGui::Text("Camera position: (%.2f, %.2f, %.2f)", cam_forward.x, cam_forward.y, cam_forward.z);
+            ImGui::Text("Trackpad left, (%.2f, %.2f)", Scene::gControllerState.trackpad_left.x, Scene::gControllerState.trackpad_left.y);
+
+            static int mode = 0;
+            ImGui::Text("AnimeMesh Mode");
+            ImGui::RadioButton("Rest pose", &mode, 0);
+            ImGui::RadioButton("LBS", &mode, 1);
+            ImGui::RadioButton("Debug", &mode, 2);
+
+            glUniform1i(SkinnedMesh::UniformLoc::Mode, mode);
+
+            ImGui::End();
         }
 
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        {
+            // Lights manager
+            ImGui::Begin("Lights manager", &show_debug_window);
 
-        auto cam_pos = Scene::camera->GetLocation();
-        ImGui::Text("Camera position: (%.2f, %.2f, %.2f)", cam_pos.x, cam_pos.y, cam_pos.z);
-        auto cam_forward = Scene::camera->GetForward();
-        ImGui::Text("Camera position: (%.2f, %.2f, %.2f)", cam_forward.x, cam_forward.y, cam_forward.z);
-        ImGui::Text("Trackpad left, (%.2f, %.2f)", Scene::gControllerState.trackpad_left.x, Scene::gControllerState.trackpad_left.y);
+            ImGui::Text("====== Spot light ======");
+            ImGui::Checkbox("Use flash light", &Scene::use_flash_light);
+            ImGui::DragFloat3("Spot light direction", glm::value_ptr(Scene::spotLightData.direction), 0.1f);
+            ImGui::SliderFloat("Spot light cut off", &Scene::spotLightData.cutOff, 0.0f, 1.0f);
+            ImGui::DragFloat3("Spot light position", glm::value_ptr(Scene::spotLightData.position), 0.1f);
+            ImGui::ColorEdit3("Spot light ambient", glm::value_ptr(Scene::spotLightData.La));
+            ImGui::ColorEdit3("Spot light diffuse", glm::value_ptr(Scene::spotLightData.Ld));
+            ImGui::ColorEdit3("Spot light specular", glm::value_ptr(Scene::spotLightData.Ls));
+            ImGui::SliderFloat("Spot light constant", &Scene::spotLightData.constant, 0.0f, 1.0f);
+            ImGui::SliderFloat("Spot light linear", &Scene::spotLightData.linear, 0.0f, 0.1f);
+            ImGui::SliderFloat("Spot light quadratic", &Scene::spotLightData.quadratic, 0.0f, 0.01f);
 
-        static int mode = 0;
-        ImGui::Text("AnimeMesh Mode");
-        ImGui::RadioButton("Rest pose", &mode, 0);
-        ImGui::RadioButton("LBS", &mode, 1);
-        ImGui::RadioButton("Debug", &mode, 2);
+            ImGui::Text("====== Point light =======");
+            ImGui::DragFloat3("Light 0 position", glm::value_ptr(Scene::pointLightData[0].position), 0.1f);
+            ImGui::ColorEdit3("Light 0 ambient", glm::value_ptr(Scene::pointLightData[0].La));
+            ImGui::ColorEdit3("Light 0 diffuse", glm::value_ptr(Scene::pointLightData[0].Ld));
+            ImGui::ColorEdit3("Light 0 specular", glm::value_ptr(Scene::pointLightData[0].Ls));
+            ImGui::SliderFloat("Light 0 constant", &Scene::pointLightData[0].constant, 0.0f, 1.0f);
+            ImGui::SliderFloat("Light 0 linear", &Scene::pointLightData[0].linear, 0.0f, 0.1f);
+            ImGui::SliderFloat("Light 0 quadratic", &Scene::pointLightData[0].quadratic, 0.0f, 0.01f);
 
-        glUniform1i(SkinnedMesh::UniformLoc::Mode, mode);
+            ImGui::DragFloat3("Light 1 position", glm::value_ptr(Scene::pointLightData[1].position), 0.1f);
+            ImGui::ColorEdit3("Light 1 ambient", glm::value_ptr(Scene::pointLightData[1].La));
+            ImGui::ColorEdit3("Light 1 diffuse", glm::value_ptr(Scene::pointLightData[1].Ld));
+            ImGui::ColorEdit3("Light 1 specular", glm::value_ptr(Scene::pointLightData[1].Ls));
+            ImGui::SliderFloat("Light 1 constant", &Scene::pointLightData[1].constant, 0.0f, 1.0f);
+            ImGui::SliderFloat("Light 1 linear", &Scene::pointLightData[1].linear, 0.0f, 0.1f);
+            ImGui::SliderFloat("Light 1 quadratic", &Scene::pointLightData[1].quadratic, 0.0f, 0.01f);
 
-        ImGui::End();
+            // ImGui::SliderFloat3("Directional light x", glm::value_ptr(Scene::dirLightData.position), -10.0f, 10.0f);
+
+            ImGui::End();
+        }
     }
 
     if (show_imgui_test) {

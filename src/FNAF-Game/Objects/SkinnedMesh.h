@@ -32,6 +32,8 @@ public:
         Mode = 4,
         DebugID = 5,
         EyeW = 6,
+        Shininess = 7,
+        UseFlashLight = 8,
         Bones = 20, // array of 100 bones
     };
 
@@ -44,7 +46,7 @@ public:
     };
 
     SkinnedMesh();
-    ~SkinnedMesh();
+    ~SkinnedMesh() override;
 
     bool LoadMesh(const std::string& filename) override;
 
