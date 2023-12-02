@@ -28,6 +28,7 @@ public:
     std::vector<SubMeshData> mSubMesh;
 
     MeshBase() = default;
+    virtual ~MeshBase() = default;
 
     virtual bool LoadMesh(const std::string& filename) = 0;
 

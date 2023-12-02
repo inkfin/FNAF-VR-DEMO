@@ -3,22 +3,45 @@ layout(binding = 0) uniform sampler2D color_tex;
 layout(location = 2) uniform float time;
 layout(location = 4) uniform int Mode;
 layout(location = 6) uniform vec4 eye_w;
+layout(location = 7) uniform float shininess;
+layout(location = 8) uniform bool use_flash_light = false;
 
-layout(std140, binding = 1) uniform LightUniforms
-{
-    vec4 La;//ambient light color
-    vec4 Ld;//diffuse light color
-    vec4 Ls;//specular light color
-    vec4 light_w;//world-space light position
-};
+#define POINT_LIGHT_COUNT 2
+struct PointLight {
+    vec3 position;
+    vec3 La;//ambient light color
+    vec3 Ld;//diffuse light color
+    vec3 Ls;//specular light color
 
-layout(std140, binding = 2) uniform MaterialUniforms
-{
-    vec4 ka;//ambient material color
-    vec4 kd;//diffuse material color
-    vec4 ks;//specular material color
-    float shininess;//specular exponent
+    float constant;
+    float linear;
+    float quadratic;
 };
+uniform PointLight pointLights[POINT_LIGHT_COUNT];
+
+struct DirLight {
+    vec3 direction;
+
+    vec3 La;//ambient light color
+    vec3 Ld;//diffuse light color
+    vec3 Ls;//specular light color;
+};
+uniform DirLight dirLight;
+
+struct SpotLight {
+    vec3 position;
+    vec3 direction;
+    float cutoff;
+
+    vec3 La;//ambient light color
+    vec3 Ld;//diffuse light color
+    vec3 Ls;//specular light color;
+
+    float constant;
+    float linear;
+    float quadratic;
+};
+uniform SpotLight spotLight;
 
 in VertexData
 {
@@ -31,20 +54,66 @@ in VertexData
 out vec4 fragcolor;//the output color for this fragment
 
 
-vec4 phone_shading(vec4 ktex, vec3 nw, vec3 lw, vec3 vw)
-{
-    vec4 ambient_term = ka * ktex * La;
+vec3 directional_shading(DirLight light, vec3 ktex) {
+    vec3 lw = normalize(-light.direction);//world-space unit light vector
+    vec3 nw = normalize(inData.nw);//world-space unit normal vector
+    vec3 vw = normalize(eye_w.xyz - inData.pw.xyz);//world-space unit view vector
+
+    vec3 ambient_term = ktex * light.La;
+
+    vec3 diffuse_term = ktex * light.Ld * max(0.0, dot(nw, lw));
+
+    vec3 rw = reflect(-lw, nw);//world-space unit reflection vector
+    vec3 specular_term = light.Ls * pow(max(0.0, dot(rw, vw)), shininess);
+
+    return ambient_term + diffuse_term + specular_term;
+}
+
+vec3 spotlight_shading(SpotLight light, vec3 ktex) {
+    vec3 lw = normalize(light.position.xyz - inData.pw.xyz);//world-space unit light vector
+    float spot_factor = dot(-lw, normalize(light.direction));
+    if (spot_factor < light.cutoff) {
+        return vec3(0.0);
+    }
+
+    vec3 nw = normalize(inData.nw);//world-space unit normal vector
+    vec3 vw = normalize(eye_w.xyz - inData.pw.xyz);//world-space unit view vector
+
+    vec3 ambient_term = ktex * light.La;
 
     const float eps = 1e-8;// small value to avoid division by 0
-    float d = distance(light_w.xyz, inData.pw.xyz);
-    // float atten = 1.0 / (d * d + eps);
-    float atten = 1.0;//ignore attenuation
+    float d = distance(light.position.xyz, inData.pw.xyz);
+    float atten = 1.0 / (light.constant + light.linear * d + light.quadratic * d * d + eps);
+    // float atten = 1.0;//ignore attenuation
 
-    vec4 diffuse_term = atten*kd*ktex*Ld*max(0.0, dot(nw, lw));
+    vec3 diffuse_term = atten * ktex * light.Ld * max(0.0, dot(nw, lw));
 
     vec3 rw = reflect(-lw, nw);//world-space unit reflection vector
 
-    vec4 specular_term = atten*ks*Ls*pow(max(0.0, dot(rw, vw)), shininess);
+    vec3 specular_term = atten * light.Ls * pow(max(0.0, dot(rw, vw)), shininess);
+
+    vec3 color = ambient_term + diffuse_term + specular_term;
+    return color * (1.0 - (1.0 - spot_factor) / (1.0 - light.cutoff));
+}
+
+vec3 phone_shading(PointLight light, vec3 ktex)
+{
+    vec3 lw = normalize(light.position.xyz - inData.pw.xyz);//world-space unit light vector
+    vec3 nw = normalize(inData.nw);//world-space unit normal vector
+    vec3 vw = normalize(eye_w.xyz - inData.pw.xyz);//world-space unit view vector
+
+    vec3 ambient_term = ktex * light.La;
+
+    const float eps = 1e-8;// small value to avoid division by 0
+    float d = distance(light.position.xyz, inData.pw.xyz);
+    float atten = 1.0 / (light.constant + light.linear * d + light.quadratic * d * d + eps);
+    // float atten = 1.0;//ignore attenuation
+
+    vec3 diffuse_term = atten * ktex * light.Ld * max(0.0, dot(nw, lw));
+
+    vec3 rw = reflect(-lw, nw);//world-space unit reflection vector
+
+    vec3 specular_term = atten * light.Ls * pow(max(0.0, dot(rw, vw)), shininess);
 
     return ambient_term + diffuse_term + specular_term;
 }
@@ -60,10 +129,16 @@ void main(void)
         ktex = mix(ktex, debug_color, inData.w_debug);
     }
 
-    vec3 nw = normalize(inData.nw);//world-space unit normal vector
-    vec3 lw = normalize(light_w.xyz - inData.pw.xyz);//world-space unit light vector
-    vec3 vw = normalize(eye_w.xyz - inData.pw.xyz);//world-space unit view vector
+    vec3 outColor = vec3(0.0, 0.0, 0.0);
+    if (use_flash_light) {
+        outColor = spotlight_shading(spotLight, ktex.xyz);
+    }
 
-    fragcolor = phone_shading(ktex, nw, lw, vw);
+    for (int i = 0; i < POINT_LIGHT_COUNT; i++)
+    {
+        outColor += phone_shading(pointLights[i], ktex.xyz);
+    }
+
+    fragcolor = vec4(outColor, 1.0);
 }
 

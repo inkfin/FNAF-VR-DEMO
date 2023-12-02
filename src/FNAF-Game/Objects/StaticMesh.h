@@ -28,6 +28,8 @@ public:
         PV = 0,
         M = 1,
         EyeW = 2,
+        Shininess = 3,
+        UseFlashLight = 4,
     };
 
     enum AttribLoc : unsigned int {

@@ -29,19 +29,48 @@ struct SceneUniforms {
 };
 inline SceneUniforms SceneData;
 
-struct LightUniforms {
-    glm::vec4 La = glm::vec4(0.2f, 0.2f, 0.25f, 1.0f); // ambient light color
-    glm::vec4 Ld = glm::vec4(0.5f, 0.5f, 0.25f, 1.0f); // diffuse light color
-    glm::vec4 Ls = glm::vec4(0.3f); // specular light color
-    glm::vec4 light_w = glm::vec4(0.0f, 2.2, 1.0f, 1.0f); // world-space light position
+struct PointLightUniforms {
+    glm::vec3 position = glm::vec3(0.0f, 2.0f, 1.0f);
+    glm::vec3 La = glm::vec3(0.1f, 0.1f, 0.1f);
+    glm::vec3 Ld = glm::vec3(0.7f, 0.2f, 0.8f);
+    glm::vec3 Ls = glm::vec3(0.8f, 0.8f, 0.8f);
+    float constant = 1.0f;
+    float linear = 0.0f;
+    float quadratic = 0.0f;
 };
-inline LightUniforms LightData;
+#define POINT_LIGHT_COUNT 2
+inline PointLightUniforms pointLightData[POINT_LIGHT_COUNT];
+
+struct DirLightUniforms {
+    glm::vec3 position = glm::vec3(0.0f, -2.0f, 1.0f);
+    glm::vec3 La = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 Ld = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 Ls = glm::vec3(0.0f, 0.0f, 0.0f);
+};
+inline DirLightUniforms dirLightData;
+
+struct SpotLightUniforms {
+    glm::vec3 direction = glm::vec3(0.0f, 0.0f, -1.0f);
+    float cutOff = 1.0f;
+
+    glm::vec3 position = glm::vec3(0.0f, 4.0f, 0.0f);
+    glm::vec3 La = glm::vec3(0.1f, 0.1f, 0.1f);
+    glm::vec3 Ld = glm::vec3(0.7f, 0.2f, 0.8f);
+    glm::vec3 Ls = glm::vec3(0.8f, 0.8f, 0.8f);
+
+    float constant = 1.0f;
+    float linear = 0.0f;
+    float quadratic = 0.0f;
+};
+inline SpotLightUniforms spotLightData;
+
+inline bool use_flash_light = true;
 
 struct MaterialUniforms {
     glm::vec4 ka = glm::vec4(0.312f, 0.261f, 0.139, 1.0f); // ambient material color
     glm::vec4 kd = glm::vec4(0.861f, 0.663f, 0.518f, 1.0f); // diffuse material color
     glm::vec4 ks = glm::vec4(1.0f); // specular material color
-    float shininess = 20.0f; // specular exponent
+    float shininess = 40.0f; // specular exponent
 };
 inline MaterialUniforms MaterialData;
 
