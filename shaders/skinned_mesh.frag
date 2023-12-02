@@ -37,8 +37,8 @@ vec4 phone_shading(vec4 ktex, vec3 nw, vec3 lw, vec3 vw)
 
     const float eps = 1e-8;// small value to avoid division by 0
     float d = distance(light_w.xyz, inData.pw.xyz);
-    // float atten = 1.0 / (d * d + eps);
-    float atten = 1.0;//ignore attenuation
+    float atten = 1.0 / (d * d + eps);
+    //float atten = 1.0;//ignore attenuation
 
     vec4 diffuse_term = atten*kd*ktex*Ld*max(0.0, dot(nw, lw));
 

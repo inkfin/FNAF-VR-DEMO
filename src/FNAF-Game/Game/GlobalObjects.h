@@ -103,4 +103,9 @@ inline std::unique_ptr<ICameraInterface> camera;
 
 // TODO: remove this later
 inline glm::mat4 translation = glm::identity<glm::mat4>();
+
+inline int game_mode = 0;
+
+inline bool is_game_started = false;
+inline bool is_game_over = false;
 }

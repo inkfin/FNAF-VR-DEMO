@@ -48,6 +48,10 @@ add_executable(${PROJECT_NAME} ${SOURCE}
         ${IMPLOT_SRC}
         ../FNAF-Game/Game/JsonConfig.cpp
         ../FNAF-Game/Game/JsonConfig.h
+        ../FNAF-Game/Objects/EventComponent.cpp
+        ../FNAF-Game/Objects/EventComponent.h
+        ../FNAF-Game/Objects/EventManager.cpp
+        ../FNAF-Game/Objects/EventManager.h
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC

@@ -16,10 +16,10 @@ Pawn::~Pawn()
 
 void Pawn::Init()
 {
-    mStatus.shock_level = SHOCK_LEVEL_MAX;
+    mStatus.shock_level = SHOCK_LEVEL_MIN;
     mStatus.active = true;
     mStatus.moving = true;
-    mStatus.speed = 10.f;
+    mStatus.speed = 0.6f;
 }
 
 void Pawn::Move(const float delta_time, const glm::vec3& direction)

@@ -79,3 +79,13 @@ void JsonConfig::LoadConfig(const std::string& path) {
     Scene::gBunny.mRotation = config.bunny.rotation;
     Scene::gBunny.mScale = config.bunny.scale;
 }
+
+void JsonConfig::LoadBunnyConfig(const std::string& path) {
+    gameConfig config = ReadConfig(path);
+    Scene::gBunny.mTranslation = config.bunny.position;
+}
+
+void JsonConfig::LoadFreddyConfig(const std::string& path) {
+    gameConfig config = ReadConfig(path);
+    Scene::gFreddy.mTranslation = config.freddy.position;
+}

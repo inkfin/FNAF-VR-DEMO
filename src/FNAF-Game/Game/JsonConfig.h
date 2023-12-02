@@ -35,4 +35,8 @@ public:
     static void RecordConfig(const std::string& path);
 
     static void LoadConfig(const std::string& path);
+
+    static void LoadBunnyConfig(const std::string& path);
+
+        static void LoadFreddyConfig(const std::string& path);
 };

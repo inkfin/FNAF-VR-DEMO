@@ -12,10 +12,12 @@
 #include "SkinnedMesh.h"
 #include "AIComponent.h"
 
-#define SHOCK_LEVEL_MAX 5
+#define SHOCK_LEVEL_MIN 1
+#define SHOCK_LEVEL_MAX 20
 
 class Pawn {
 public:
+    int pawn_id;
 
     struct Status {
         int shock_level; // when shock_level is 0, the pawn is gone

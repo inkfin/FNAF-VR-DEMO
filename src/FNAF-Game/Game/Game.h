@@ -14,6 +14,9 @@ void UpdateDynamicStep(float deltaTime);
 void UpdateFixedStep();
 void Shutdown();
 
+void GeneraCase(float deltaTime);
+void DeadCase();
+
 }
 
 #endif // !__GAME_H__
