@@ -21,4 +21,5 @@ void DeadLight(int mode);
 
 void EndScene();
 void WinCase();
+void InitGameStart();
 }

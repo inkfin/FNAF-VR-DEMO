@@ -121,4 +121,11 @@ struct gameLoopConfig {
 inline gameLoopConfig game_loop_config;
 // 0 for lose, 1 for win
 inline bool game_result;
+inline bool key_flash_light;
+
+inline bool freddy_stop_flag = 0;
+inline bool bunny_show_flag;
+inline int bunny_hold_count;
+inline int game_time_count;
+inline int EndTitleShow;
 }

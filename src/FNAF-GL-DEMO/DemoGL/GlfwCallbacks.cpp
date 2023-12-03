@@ -78,6 +78,13 @@ void GlfwCallbacks::Keyboard(GLFWwindow* window, int key, int scancode, int acti
             else if (action == GLFW_RELEASE)
                 pCamera->move_down_flag = false;
             break;
+        case 'f':
+        case 'F':
+            if (action == GLFW_PRESS || action == GLFW_REPEAT)
+                Scene::key_flash_light = true;
+            else if (action == GLFW_RELEASE)
+                Scene::key_flash_light = false;
+            break;
         case GLFW_KEY_UP:
             if (action == GLFW_PRESS)
                 pCamera->ProcessMouseMovement(0.f, 1000.f);
