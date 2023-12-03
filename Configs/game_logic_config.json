@@ -3,6 +3,6 @@
     "FreddyDeathDistance" : -10.0,
     "BunnyShowTime": 150,
     "BunnyShowRate": 6,
-    "BunnyReactTime": 90,
+    "BunnyReactTime": 60,
     "SpeedIncreaseRate": 5.0
 }

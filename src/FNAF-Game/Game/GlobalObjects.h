@@ -126,6 +126,8 @@ inline bool key_flash_light;
 inline bool freddy_stop_flag = 0;
 inline bool bunny_show_flag;
 inline int bunny_hold_count;
+inline int bunny_death_count = 0;
+constexpr int bunny_clear_time = 60; // frames
 inline int game_time_count;
 inline int EndTitleShow;
 }

@@ -14,12 +14,11 @@ void UpdateFixedStep();
 void Shutdown();
 
 void GeneraCase(float deltaTime);
-void DeadCase();
+void DeadCase(float deltaTime);
 
 void StartScene();
-void DeadLight(int mode);
 
-void EndScene();
-void WinCase();
+void EndScene(float deltaTime);
+void WinCase(float deltaTime);
 void InitGameStart();
 }

@@ -49,6 +49,7 @@ void JsonConfig::WritePawnJson(const std::string& path)
 }
 
 
+// TODO: currently not working
 void JsonConfig::WriteLightPosition(const std::string& path) {
     using namespace Scene;
     json config = {
@@ -98,6 +99,7 @@ void JsonConfig::LoadBunnyLocation(const std::string& path)
     GET_VEC3_CONFIG(config, bunny_position, gBunny.mTranslation);
 }
 
+// TODO: currently not working
 void JsonConfig::LoadLightColorConfig(const std::string& path)
 {
     std::ifstream f(path);
@@ -129,6 +131,7 @@ void JsonConfig::LoadLightColorConfig(const std::string& path)
 }
 
 
+// TODO: currently not working
 void JsonConfig::LoadLightPositionConfig(const std::string& path)
 {
     std::ifstream f(path);

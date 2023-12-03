@@ -33,7 +33,6 @@ public:
         DebugID = 5,
         EyeW = 6,
         Shininess = 7,
-        UseFlashLight = 8,
         Bones = 20, // array of 100 bones
     };
 

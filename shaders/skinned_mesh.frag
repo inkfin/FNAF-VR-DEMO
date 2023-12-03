@@ -4,9 +4,8 @@ layout(location = 2) uniform float time;
 layout(location = 4) uniform int Mode;
 layout(location = 6) uniform vec4 eye_w;
 layout(location = 7) uniform float shininess;
-layout(location = 8) uniform bool use_flash_light = false;
 
-#define POINT_LIGHT_COUNT 2
+#define POINT_LIGHT_COUNT 4
 struct PointLight {
     vec3 position;
     vec3 La;//ambient light color
@@ -16,6 +15,8 @@ struct PointLight {
     float constant;
     float linear;
     float quadratic;
+
+    bool isOn;
 };
 uniform PointLight pointLights[POINT_LIGHT_COUNT];
 
@@ -25,6 +26,8 @@ struct DirLight {
     vec3 La;//ambient light color
     vec3 Ld;//diffuse light color
     vec3 Ls;//specular light color;
+
+    bool is_on;
 };
 uniform DirLight dirLight;
 
@@ -40,6 +43,8 @@ struct SpotLight {
     float constant;
     float linear;
     float quadratic;
+
+    bool isOn;
 };
 uniform SpotLight spotLight;
 
@@ -130,12 +135,13 @@ void main(void)
     }
 
     vec3 outColor = vec3(0.0, 0.0, 0.0);
-    if (use_flash_light) {
+    if (spotLight.isOn) {
         outColor = spotlight_shading(spotLight, ktex.xyz);
     }
 
     for (int i = 0; i < POINT_LIGHT_COUNT; i++)
     {
+        if (!pointLights[i].isOn) continue;
         outColor += phone_shading(pointLights[i], ktex.xyz);
     }
 

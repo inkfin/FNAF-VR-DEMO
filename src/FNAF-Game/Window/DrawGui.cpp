@@ -75,6 +75,25 @@ void Display(GLFWwindow* window)
 
             ImGui::EndMenu();
         }
+
+        if (ImGui::BeginMenu("Light")) {
+            if (ImGui::MenuItem("Spot Light", 0, show_spotlight_manager)) {
+                show_spotlight_manager = !show_spotlight_manager;
+            }
+            if (ImGui::MenuItem("Point Light 0", 0, show_pointlight0_manager)) {
+                show_pointlight0_manager = !show_pointlight0_manager;
+            }
+            if (ImGui::MenuItem("Point Light 1", 0, show_pointlight1_manager)) {
+                show_pointlight1_manager = !show_pointlight1_manager;
+            }
+            if (ImGui::MenuItem("Point Light 2", 0, show_pointlight2_manager)) {
+                show_pointlight2_manager = !show_pointlight2_manager;
+            }
+            if (ImGui::MenuItem("Point Light 3", 0, show_pointlight3_manager)) {
+                show_pointlight3_manager = !show_pointlight3_manager;
+            }
+            ImGui::EndMenu();
+        }
         ImGui::EndMainMenuBar();
     }
 #pragma endregion
@@ -94,31 +113,15 @@ void Display(GLFWwindow* window)
             ImGui::Text("Camera position: (%.2f, %.2f, %.2f)", cam_forward.x, cam_forward.y, cam_forward.z);
             ImGui::Text("Trackpad left, (%.2f, %.2f)", Scene::gControllerState.trackpad_left.x, Scene::gControllerState.trackpad_left.y);
 
-            static int mode = 0;
-            ImGui::Text("AnimeMesh Mode");
-            ImGui::RadioButton("Rest pose", &mode, 0);
-            ImGui::RadioButton("LBS", &mode, 1);
-            ImGui::RadioButton("Debug", &mode, 2);
+            ImGui::Text("Till Bunny kill you: <%.2f>", (float)Scene::bunny_death_count / Scene::game_loop_config.bunny_react_time);
 
-            glUniform1i(SkinnedMesh::UniformLoc::Mode, mode);
-
-            ImGui::End();
-        }
-
-        {
-            // Lights manager
-            ImGui::Begin("Lights manager", &show_debug_window);
-
-
-            ImGui::DragFloat3("Light 1 position", glm::value_ptr(LightManager::pointLightData[1].position), 0.1f);
-            ImGui::ColorEdit3("Light 1 ambient", glm::value_ptr(LightManager::pointLightData[1].La));
-            ImGui::ColorEdit3("Light 1 diffuse", glm::value_ptr(LightManager::pointLightData[1].Ld));
-            ImGui::ColorEdit3("Light 1 specular", glm::value_ptr(LightManager::pointLightData[1].Ls));
-            ImGui::SliderFloat("Light 1 constant", &LightManager::pointLightData[1].constant, 0.0f, 1.0f);
-            ImGui::SliderFloat("Light 1 linear", &LightManager::pointLightData[1].linear, 0.0f, 0.1f);
-            ImGui::SliderFloat("Light 1 quadratic", &LightManager::pointLightData[1].quadratic, 0.0f, 0.01f);
-
-            // ImGui::SliderFloat3("Directional light x", glm::value_ptr(Scene::dirLightData.position), -10.0f, 10.0f);
+//            static int mode = 0;
+//            ImGui::Text("AnimeMesh Mode");
+//            ImGui::RadioButton("Rest pose", &mode, 0);
+//            ImGui::RadioButton("LBS", &mode, 1);
+//            ImGui::RadioButton("Debug", &mode, 2);
+//
+//            glUniform1i(SkinnedMesh::UniformLoc::Mode, mode);
 
             ImGui::End();
         }
@@ -141,6 +144,7 @@ void Display(GLFWwindow* window)
 
     if (show_pointlight0_manager) {
         ImGui::Begin("====== Point Light 0 ======", &show_pointlight0_manager);
+        ImGui::Checkbox("Light on", &LightManager::pointLightData[0].isOn);
         ImGui::DragFloat3("position", glm::value_ptr(LightManager::pointLightData[0].position), 0.1f);
         ImGui::ColorEdit3("ambient", glm::value_ptr(LightManager::pointLightData[0].La));
         ImGui::ColorEdit3("diffuse", glm::value_ptr(LightManager::pointLightData[0].Ld));
@@ -153,6 +157,7 @@ void Display(GLFWwindow* window)
 
     if (show_pointlight1_manager) {
         ImGui::Begin("====== Point Light 1 ======", &show_pointlight1_manager);
+        ImGui::Checkbox("Light on", &LightManager::pointLightData[1].isOn);
         ImGui::DragFloat3("position", glm::value_ptr(LightManager::pointLightData[1].position), 0.1f);
         ImGui::ColorEdit3("ambient", glm::value_ptr(LightManager::pointLightData[1].La));
         ImGui::ColorEdit3("diffuse", glm::value_ptr(LightManager::pointLightData[1].Ld));
@@ -165,6 +170,7 @@ void Display(GLFWwindow* window)
 
     if (show_pointlight2_manager) {
         ImGui::Begin("====== Point Light 2 ======", &show_pointlight2_manager);
+        ImGui::Checkbox("Light on", &LightManager::pointLightData[2].isOn);
         ImGui::DragFloat3("position", glm::value_ptr(LightManager::pointLightData[2].position), 0.1f);
         ImGui::ColorEdit3("ambient", glm::value_ptr(LightManager::pointLightData[2].La));
         ImGui::ColorEdit3("diffuse", glm::value_ptr(LightManager::pointLightData[2].Ld));
@@ -177,6 +183,7 @@ void Display(GLFWwindow* window)
 
     if (show_pointlight3_manager) {
         ImGui::Begin("====== Point Light 3 ======", &show_pointlight3_manager);
+        ImGui::Checkbox("Light on", &LightManager::pointLightData[3].isOn);
         ImGui::DragFloat3("position", glm::value_ptr(LightManager::pointLightData[3].position), 0.1f);
         ImGui::ColorEdit3("ambient", glm::value_ptr(LightManager::pointLightData[3].La));
         ImGui::ColorEdit3("diffuse", glm::value_ptr(LightManager::pointLightData[3].Ld));

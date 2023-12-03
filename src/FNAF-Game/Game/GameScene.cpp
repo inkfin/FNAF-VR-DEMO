@@ -109,7 +109,7 @@ void GameScene::Render()
     else if (Scene::is_game_over) {
         if (Scene::game_result) {
             pShader->setUniform("M", glm::translate(glm::vec3(-1.8f, 0.f, -6.5f)) * glm::rotate(glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f)) * glm::scale(glm::vec3(0.005f)));
-            pShader->setUniform("color", glm::vec4(1.f, 0.f, 0.f, 1.f));
+            pShader->setUniform("color", glm::vec4(0.f, 1.f, 0.f, 1.f));
             gWinMesh->Render();
         }
         else {

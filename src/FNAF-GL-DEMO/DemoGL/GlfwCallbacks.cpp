@@ -170,6 +170,7 @@ void GlfwCallbacks::WindowResize(GLFWwindow* glfw_window, int width, int height)
 {
     // std::cout << "width : " << width << ", height: " << height << std::endl;
 
+    glViewport(0, 0, width, height);
     GlfwWindow::Size[0] = width;
     GlfwWindow::Size[1] = height;
     GlfwWindow::Aspect = float(GlfwWindow::Size[0]) / float(GlfwWindow::Size[1]);
