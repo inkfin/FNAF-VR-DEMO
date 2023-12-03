@@ -4,95 +4,167 @@
 
 #include "JsonConfig.h"
 
+#define SET_VEC3_CONFIG(config_name, cpp_name)\
+{ #config_name"_x", cpp_name.x },\
+{ #config_name"_y", cpp_name.y },\
+{ #config_name"_z", cpp_name.z }
+
+#define GET_VEC3_CONFIG(config_object, config_name, cpp_name)\
+cpp_name = glm::vec3(config_object[#config_name"_x"].get<float>(), config_object[#config_name"_y"].get<float>(), config_object[#config_name"_z"].get<float>())
+
+#define GET_VEC3_CONFIG_STR(config_object, config_str, cpp_name)\
+cpp_name = glm::vec3(config_object[config_str+"_x"].get<float>(), config_object[config_str+"_y"].get<float>(), config_object[config_str+"_z"].get<float>())
+
+#define GET_FLOAT_CONFIG(config_object, config_name, cpp_name)\
+cpp_name = config_object[config_name].get<float>()
+
+#define GET_INT_CONFIG(config_object, config_name, cpp_name)\
+cpp_name = config_object[config_name].get<int>()
+
 json JsonConfig::LoadJson(const std::string& path)
 {
     std::ifstream f(path);
     return json::parse(f);
 }
 
-void JsonConfig::WriteJson(const std::string& path, gameConfig game_config)
-{
+static void WriteJson(const std::string& path, json config) {
     std::ofstream f(path);
-
-    json config = {
-        { "freddy_position_x", game_config.freddy.position.x },
-        { "freddy_position_y", game_config.freddy.position.y },
-        { "freddy_position_z", game_config.freddy.position.z },
-        { "freddy_rotation_x", game_config.freddy.rotation.x },
-        { "freddy_rotation_y", game_config.freddy.rotation.y },
-        { "freddy_rotation_z", game_config.freddy.rotation.z },
-        { "freddy_scale_x", game_config.freddy.scale.x },
-        { "freddy_scale_y", game_config.freddy.scale.y },
-        { "freddy_scale_z", game_config.freddy.scale.z },
-
-        { "bunny_position_x", game_config.bunny.position.x },
-        { "bunny_position_y", game_config.bunny.position.y },
-        { "bunny_position_z", game_config.bunny.position.z },
-        { "bunny_rotation_x", game_config.bunny.rotation.x },
-        { "bunny_rotation_y", game_config.bunny.rotation.y },
-        { "bunny_rotation_z", game_config.bunny.rotation.z },
-        { "bunny_scale_x", game_config.bunny.scale.x },
-        { "bunny_scale_y", game_config.bunny.scale.y },
-        { "bunny_scale_z", game_config.bunny.scale.z },
-    };
-
     f << config.dump(4);
 }
 
-gameConfig JsonConfig::ReadConfig(const std::string& path)
+void JsonConfig::WritePawnJson(const std::string& path)
 {
-    std::ifstream f(path);
-    json config = json::parse(f);
+    using namespace Scene;
+    json config = {
+        SET_VEC3_CONFIG(freddy_position, gFreddy.mTranslation),
+        SET_VEC3_CONFIG(freddy_rotation, gFreddy.mRotation),
+        SET_VEC3_CONFIG(freddy_scale, gFreddy.mScale),
 
-    gameConfig game_config;
+        SET_VEC3_CONFIG(bunny_position, gBunny.mTranslation),
+        SET_VEC3_CONFIG(bunny_rotation, gBunny.mRotation),
+        SET_VEC3_CONFIG(bunny_scale, gBunny.mScale),
+    };
 
-    game_config.freddy.position = glm::vec3(config["freddy_position_x"].template get<float>(), config["freddy_position_y"].template get<float>(), config["freddy_position_z"].template get<float>());
-    game_config.freddy.rotation = glm::vec3(config["freddy_rotation_x"].template get<float>(), config["freddy_rotation_y"].template get<float>(), config["freddy_rotation_z"].template get<float>());
-    game_config.freddy.scale = glm::vec3(config["freddy_scale_x"].template get<float>(), config["freddy_scale_y"].template get<float>(), config["freddy_scale_z"].template get<float>());
-
-    game_config.bunny.position = glm::vec3(config["bunny_position_x"].template get<float>(), config["bunny_position_y"].template get<float>(), config["bunny_position_z"].template get<float>());
-    game_config.bunny.rotation = glm::vec3(config["bunny_rotation_x"].template get<float>(), config["bunny_rotation_y"].template get<float>(), config["bunny_rotation_z"].template get<float>());
-    game_config.bunny.scale = glm::vec3(config["bunny_scale_x"].template get<float>(), config["bunny_scale_y"].template get<float>(), config["bunny_scale_z"].template get<float>());
-
-    return game_config;
+    WriteJson(path, config);
 }
 
-void JsonConfig::RecordConfig(const std::string& path)
-{
-    gameConfig config;
 
-    config.freddy.position = Scene::gFreddy.mTranslation;
-    config.freddy.rotation = Scene::gFreddy.mRotation;
-    config.freddy.scale = Scene::gFreddy.mScale;
+void JsonConfig::WriteLightPosition(const std::string& path) {
+    using namespace Scene;
+    json config = {
+        SET_VEC3_CONFIG(point_light0_position, LightManager::pointLightData[0].position),
+        SET_VEC3_CONFIG(point_light1_position, LightManager::pointLightData[1].position),
+        SET_VEC3_CONFIG(point_light2_position, LightManager::pointLightData[2].position),
+        SET_VEC3_CONFIG(point_light3_position, LightManager::pointLightData[3].position),
 
-    config.bunny.position = Scene::gBunny.mTranslation;
-    config.bunny.rotation = Scene::gBunny.mRotation;
-    config.bunny.scale = Scene::gBunny.mScale;
+        SET_VEC3_CONFIG(bunny_position, gBunny.mTranslation),
+        SET_VEC3_CONFIG(bunny_rotation, gBunny.mRotation),
+        SET_VEC3_CONFIG(bunny_scale, gBunny.mScale),
+    };
 
     WriteJson(path, config);
 }
 
 void JsonConfig::LoadConfig(const std::string& path)
 {
-    gameConfig config = ReadConfig(path);
+    using namespace Scene;
+    std::ifstream f(path);
+    json config = json::parse(f);
 
-    Scene::gFreddy.mTranslation = config.freddy.position;
-    Scene::gFreddy.mRotation = config.freddy.rotation;
-    Scene::gFreddy.mScale = config.freddy.scale;
+    GET_VEC3_CONFIG(config, freddy_position, gFreddy.mTranslation);
+    GET_VEC3_CONFIG(config, freddy_rotation, gFreddy.mRotation);
+    GET_VEC3_CONFIG(config, freddy_scale, gFreddy.mScale);
 
-    Scene::gBunny.mTranslation = config.bunny.position;
-    Scene::gBunny.mRotation = config.bunny.rotation;
-    Scene::gBunny.mScale = config.bunny.scale;
+    GET_VEC3_CONFIG(config, bunny_position, gBunny.mTranslation);
+    GET_VEC3_CONFIG(config, bunny_rotation, gBunny.mRotation);
+    GET_VEC3_CONFIG(config, bunny_scale, gBunny.mScale);
 }
 
-void JsonConfig::LoadBunnyConfig(const std::string& path)
+void JsonConfig::LoadFreddyLocation(const std::string& path)
 {
-    gameConfig config = ReadConfig(path);
-    Scene::gBunny.mTranslation = config.bunny.position;
+    using namespace Scene;
+    std::ifstream f(path);
+    json config = json::parse(f);
+
+    GET_VEC3_CONFIG(config, freddy_position, gFreddy.mTranslation);
 }
 
-void JsonConfig::LoadFreddyConfig(const std::string& path)
+void JsonConfig::LoadBunnyLocation(const std::string& path)
 {
-    gameConfig config = ReadConfig(path);
-    Scene::gFreddy.mTranslation = config.freddy.position;
+    using namespace Scene;
+    std::ifstream f(path);
+    json config = json::parse(f);
+
+    GET_VEC3_CONFIG(config, bunny_position, gBunny.mTranslation);
 }
+
+void JsonConfig::LoadLightColorConfig(const std::string& path)
+{
+    std::ifstream f(path);
+    json config = json::parse(f);
+
+    // point light config
+    for (int i = 0; i < POINT_LIGHT_COUNT; i++) {
+        const std::string light_name = "point_light" + std::to_string(i);
+        LightManager::PointLightUniforms& light = LightManager::pointLightData[i];
+
+        GET_VEC3_CONFIG_STR(config, light_name+"_La", light.La);
+        GET_VEC3_CONFIG_STR(config, light_name+"_Ld", light.La);
+        GET_VEC3_CONFIG_STR(config, light_name+"_Ls", light.La);
+        GET_FLOAT_CONFIG(config, light_name+"_constant", light.constant);
+        GET_FLOAT_CONFIG(config, light_name+"_linear", light.linear);
+        GET_FLOAT_CONFIG(config, light_name+"_quadratic", light.quadratic);
+    }
+
+    // spotlight config
+    {
+        LightManager::SpotLightUniforms& light = LightManager::spotLightData;
+        GET_VEC3_CONFIG(config, spotlight_La, light.La);
+        GET_VEC3_CONFIG(config, spotlight_Ld, light.Ld);
+        GET_VEC3_CONFIG(config, spotlight_Ls, light.Ls);
+        GET_FLOAT_CONFIG(config, "spotlight_constant", light.constant);
+        GET_FLOAT_CONFIG(config, "spotlight_linear", light.linear);
+        GET_FLOAT_CONFIG(config, "spotlight_quadratic", light.quadratic);
+    }
+}
+
+
+void JsonConfig::LoadLightPositionConfig(const std::string& path)
+{
+    std::ifstream f(path);
+    json config = json::parse(f);
+
+    // point light config
+    for (int i = 0; i < POINT_LIGHT_COUNT; i++) {
+        const std::string light_name = "point_light" + std::to_string(i);
+        LightManager::PointLightUniforms& light = LightManager::pointLightData[i];
+
+        GET_VEC3_CONFIG_STR(config, light_name+"_position", light.position);
+    }
+
+    // spotlight config
+    {
+        LightManager::SpotLightUniforms& light = LightManager::spotLightData;
+        GET_VEC3_CONFIG(config, spotlight_position, light.position);
+        GET_VEC3_CONFIG(config, spotlight_direction, light.direction);
+        GET_FLOAT_CONFIG(config, "spotlight_cutOff", light.cutOff);
+    }
+}
+
+void JsonConfig::LoadGameLoopConfig(const std::string& path) {
+    using namespace Scene;
+    std::ifstream f(path);
+    json config = json::parse(f);
+
+    GET_INT_CONFIG(config, "GameTime", game_loop_config.game_time);
+    GET_FLOAT_CONFIG(config, "FreddyDeathDistance", game_loop_config.freddy_death_distance);
+    GET_INT_CONFIG(config, "BunnyShowTime", game_loop_config.bunny_show_time);
+    GET_INT_CONFIG(config, "BunnyShowRate", game_loop_config.bunny_show_rate);
+    GET_INT_CONFIG(config, "BunnyReactTime", game_loop_config.bunny_react_time);
+    GET_FLOAT_CONFIG(config, "SpeedIncreaseRate", game_loop_config.speed_increase_rate);
+}
+
+#undef SET_VEC3_CONFIG
+#undef GET_VEC3_CONFIG
+#undef GET_VEC3_CONFIG_DIR
+#undef GET_FLOAT_CONFIG

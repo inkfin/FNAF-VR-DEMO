@@ -18,7 +18,7 @@ struct PointLightUniforms {
     float linear = 0.0f;
     float quadratic = 0.0f;
 };
-#define POINT_LIGHT_COUNT 2
+#define POINT_LIGHT_COUNT 4
 inline PointLightUniforms pointLightData[POINT_LIGHT_COUNT];
 
 struct DirLightUniforms {
@@ -44,7 +44,7 @@ struct SpotLightUniforms {
 };
 inline SpotLightUniforms spotLightData;
 
-inline bool use_flash_light = true;
+inline bool use_flash_light = false;
 
 void InitLight();
 

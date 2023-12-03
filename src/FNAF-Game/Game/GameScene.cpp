@@ -9,11 +9,21 @@
 #include "GlobalObjects.h"
 #include "Game.h"
 #include "Objects/LightManager.h"
+#include "Objects/TitleMesh.h"
 
 using namespace Scene;
 
 void GameScene::ModelInit()
 {
+    gStartMesh = std::make_unique<TitleMesh>();
+    gStartMesh->LoadMesh(start_title_name);
+
+    gEndMesh = std::make_unique<TitleMesh>();
+    gEndMesh->LoadMesh(end_title_name);
+
+    gWinMesh = std::make_unique<TitleMesh>();
+    gWinMesh->LoadMesh(win_title_name);
+
     // initialize map
     gMapMesh = std::make_shared<StaticMesh>();
     gMapMesh->LoadMesh(map_name);
@@ -79,11 +89,35 @@ void GameScene::Init()
     // DrawGui::InitVr();
 
     JsonConfig::LoadConfig(R"(Configs\vr_ini_config.json)");
+    JsonConfig::LoadGameLoopConfig(R"(Configs\game_logic_config.json)");
 }
 
 void GameScene::Render()
 {
     Shader* pShader;
+
+    pShader = TitleMesh::sShader();
+    pShader->UseProgram();
+
+    pShader->setUniform("PV", SceneData.PV);
+
+    if (!Scene::is_game_started) {
+        pShader->setUniform("M", glm::translate(glm::vec3(-6.5f, 2.f, -6.5f)) * glm::rotate(glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f)) * glm::scale(glm::vec3(0.03f)));
+        pShader->setUniform("color", glm::vec4(0.f, 1.f, 0.f, 1.f));
+        gStartMesh->Render();
+    }
+    else if (Scene::is_game_over) {
+        if (Scene::game_result) {
+            pShader->setUniform("M", glm::translate(glm::vec3(-1.8f, 0.f, -6.5f)) * glm::rotate(glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f)) * glm::scale(glm::vec3(0.005f)));
+            pShader->setUniform("color", glm::vec4(1.f, 0.f, 0.f, 1.f));
+            gWinMesh->Render();
+        }
+        else {
+            pShader->setUniform("M", glm::translate(glm::vec3(-1.8f, 0.f, -6.5f)) * glm::rotate(glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f)) * glm::scale(glm::vec3(0.005f)));
+            pShader->setUniform("color", glm::vec4(1.f, 0.f, 0.f, 1.f));
+            gEndMesh->Render();
+        }
+    }
 
     // render Scene
     pShader = StaticMesh::sShader();
@@ -147,8 +181,19 @@ void GameScene::Idle()
     time_passed += dt;
 
     //    gMapMesh->Update(time_sec);
-    gFreddy.mMesh->Update(time_sec);
-    gBunny.mMesh->Update(time_sec);
+    if (!Scene::gFreddy.mStatus.active) {
+        gFreddy.mMesh->Update(0);
+    }
+    else {
+        gFreddy.mMesh->Update(time_sec * (1.f + Scene::rate));
+    }
+
+    if (!Scene::gBunny.mStatus.active) {
+        gBunny.mMesh->Update(0);
+    }
+    else {
+        gBunny.mMesh->Update(time_sec);
+    }
 
     StaticMesh::sShader()->setUniform("time", time_sec);
 

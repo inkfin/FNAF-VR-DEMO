@@ -52,6 +52,8 @@ add_executable(${PROJECT_NAME} ${SOURCE}
         ../FNAF-Game/Objects/EventComponent.h
         ../FNAF-Game/Objects/EventManager.cpp
         ../FNAF-Game/Objects/EventManager.h
+        ../FNAF-Game/Objects/TitleMesh.cpp
+        ../FNAF-Game/Objects/TitleMesh.h
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC

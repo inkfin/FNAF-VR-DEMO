@@ -1,7 +1,3 @@
-//
-// Created by boile on 2023/11/15.
-//
-
 #pragma once
 
 #include <string>
@@ -22,7 +18,6 @@ public:
     struct Status {
         int shock_level; // when shock_level is 0, the pawn is gone
         bool active;
-        bool moving;
         float speed;
     } mStatus;
 

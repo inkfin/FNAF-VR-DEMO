@@ -18,7 +18,6 @@ void Pawn::Init()
 {
     mStatus.shock_level = SHOCK_LEVEL_MIN;
     mStatus.active = true;
-    mStatus.moving = true;
     mStatus.speed = 0.6f;
 }
 

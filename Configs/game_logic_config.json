@@ -1,0 +1,8 @@
+{
+    "GameTime": 300,
+    "FreddyDeathDistance" : -10.0,
+    "BunnyShowTime": 150,
+    "BunnyShowRate": 6,
+    "BunnyReactTime": 90,
+    "SpeedIncreaseRate": 5.0
+}

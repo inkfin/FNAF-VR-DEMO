@@ -6,20 +6,9 @@
 #include <fstream>
 
 #include "Game/GlobalObjects.h"
+#include "Objects/LightManager.h"
 
 using json = nlohmann::json;
-
-struct characterConfig {
-    glm::vec3 position {};
-    glm::vec3 rotation {};
-    glm::vec3 scale {};
-    bool animated = false;
-};
-
-struct gameConfig {
-    characterConfig freddy;
-    characterConfig bunny;
-};
 
 class JsonConfig {
 public:
@@ -28,15 +17,17 @@ public:
 
     static json LoadJson(const std::string& path);
 
-    static void WriteJson(const std::string& path, gameConfig game_config);
-
-    static gameConfig ReadConfig(const std::string& path);
-
-    static void RecordConfig(const std::string& path);
+    static void WritePawnJson(const std::string& path);
+    static void WriteLightPosition(const std::string& path);
+    static void WriteLightColor(const std::string& path);
 
     static void LoadConfig(const std::string& path);
 
-    static void LoadBunnyConfig(const std::string& path);
+    static void LoadFreddyLocation(const std::string& path);
+    static void LoadBunnyLocation(const std::string& path);
 
-    static void LoadFreddyConfig(const std::string& path);
+    static void LoadLightColorConfig(const std::string& path);
+    static void LoadLightPositionConfig(const std::string& path);
+
+    static void LoadGameLoopConfig(const std::string& path);
 };

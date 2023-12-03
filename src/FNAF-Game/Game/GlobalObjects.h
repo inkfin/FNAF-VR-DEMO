@@ -1,6 +1,3 @@
-//
-// Created by 11096 on 11/19/2023.
-//
 #pragma once
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -13,10 +10,14 @@
 
 #include "Shader.h"
 #include "CameraInterface.h"
+#include "Objects/TitleMesh.h"
 
 namespace Scene {
 
 static const std::string map_name = "assets/Map2/Scene.gltf";
+static const std::string start_title_name = "assets/Title/Start.gltf";
+static const std::string end_title_name = "assets/Title/End.gltf";
+static const std::string win_title_name = "assets/Title/Win.gltf";
 
 static const std::string ShaderDir = "shaders/";
 
@@ -94,6 +95,10 @@ inline std::shared_ptr<StaticMesh> gMapMesh;
 
 inline std::unique_ptr<ICameraInterface> camera;
 
+inline std::unique_ptr<TitleMesh> gStartMesh;
+inline std::unique_ptr<TitleMesh> gEndMesh;
+inline std::unique_ptr<TitleMesh> gWinMesh;
+
 // TODO: remove this later
 inline glm::mat4 translation = glm::identity<glm::mat4>();
 
@@ -101,4 +106,19 @@ inline int game_mode = 0;
 
 inline bool is_game_started = false;
 inline bool is_game_over = false;
+
+inline float freddy_ini_speed = 0.6f;
+inline float rate = (float)Scene::gFreddy.mStatus.shock_level / 5.f;
+
+struct gameLoopConfig {
+    int game_time;
+    float freddy_death_distance;
+    int bunny_show_time;
+    int bunny_show_rate;
+    int bunny_react_time;
+    float speed_increase_rate;
+};
+inline gameLoopConfig game_loop_config;
+// 0 for lose, 1 for win
+inline bool game_result;
 }

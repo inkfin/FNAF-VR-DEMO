@@ -1,5 +1,4 @@
-#ifndef __GAME_H__
-#define __GAME_H__
+#pragma once
 
 #include <Windows.h>
 #include "JsonConfig.h"
@@ -17,6 +16,9 @@ void Shutdown();
 void GeneraCase(float deltaTime);
 void DeadCase();
 
-}
+void StartScene();
+void DeadLight(int mode);
 
-#endif // !__GAME_H__
+void EndScene();
+void WinCase();
+}

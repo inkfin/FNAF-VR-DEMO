@@ -88,33 +88,10 @@ void XrCallbacks::TrackpadTouchEvent(int hand, bool click)
 void XrCallbacks::TrackpadXYEvent(int hand, const glm::vec2& p)
 {
     // 0 for left hand, 1 for right hand
-    if (hand == 0)
-    {
-        //glm::vec3 delta_pos = glm::vec3(0.0f, -p.y, 0.f);
-//        glm::vec3 delta_pos = glm::vec3(-p.x, 0.f, p.y);
-//        Camera::Update(delta_pos);
-
+    if (hand == 0) {
         Scene::gControllerState.trackpad_left = p;
     }
-//    else {
-//        glm::vec3 delta_pos = glm::vec3(-p.x, 0.f, p.y);
-//        Camera::Update(delta_pos);
-//    }
     else {
-
-        if (Scene::model_opt == 0) {
-            Scene::gFreddy.mStatus.moving = true;
-            Scene::gBunny.mStatus.moving = false;
-        }
-        else if (Scene::model_opt == 1) {
-            Scene::gFreddy.mStatus.moving = false;
-            Scene::gBunny.mStatus.moving = true;
-        }
-        else {
-            Scene::gFreddy.mStatus.moving = false;
-            Scene::gBunny.mStatus.moving = false;
-        }
-
         Scene::gControllerState.trackpad_right = p;
     }
 }
