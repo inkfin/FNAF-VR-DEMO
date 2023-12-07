@@ -8,7 +8,7 @@
 #include "SkinnedMesh.h"
 #include "AIComponent.h"
 
-#define SHOCK_LEVEL_MIN 1
+#define SHOCK_LEVEL_MIN 5
 #define SHOCK_LEVEL_MAX 20
 
 class Pawn {

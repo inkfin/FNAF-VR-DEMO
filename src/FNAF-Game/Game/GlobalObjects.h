@@ -108,7 +108,7 @@ inline bool is_game_started = false;
 inline bool is_game_over = false;
 
 inline float freddy_ini_speed = 0.6f;
-inline float rate = (float)Scene::gFreddy.mStatus.shock_level / 5.f;
+inline float rate = 1.f;
 
 struct gameLoopConfig {
     int game_time;
@@ -130,4 +130,12 @@ inline int bunny_death_count = 0;
 constexpr int bunny_clear_time = 60; // frames
 inline int game_time_count;
 inline int EndTitleShow;
+
+// GL speed
+inline float dark_a = 0.65f;
+inline float bright_a = 0.3f;
+
+// VR Speed
+inline float dark_a_VR = 0.65f;
+inline float bright_a_VR = 0.3f;
 }

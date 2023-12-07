@@ -182,22 +182,30 @@ void GameScene::Idle()
     prev_time_sec = time_sec;
     time_passed += dt;
 
+    static float mesh_start_time;
+
+    if (!Scene::is_game_started) mesh_start_time = 0.0f;
+    if (Scene::is_game_started && mesh_start_time == 0.0f) {
+        mesh_start_time = time_sec;
+    }
+    float mesh_time_sec = time_sec - mesh_start_time;
+
     //    gMapMesh->Update(time_sec);
     if (!Scene::gFreddy.mStatus.active) {
         gFreddy.mMesh->Update(0);
     }
     else {
-        gFreddy.mMesh->Update(time_sec * (1.f + Scene::rate));
+        gFreddy.mMesh->Update(mesh_time_sec * Scene::rate);
     }
 
     if (!Scene::gBunny.mStatus.active) {
         gBunny.mMesh->Update(0);
     }
     else {
-        gBunny.mMesh->Update(time_sec);
+        gBunny.mMesh->Update(mesh_time_sec);
     }
 
-    StaticMesh::sShader()->setUniform("time", time_sec);
+    //StaticMesh::sShader()->setUniform("time", time_sec);
 
     // Pawn
 }

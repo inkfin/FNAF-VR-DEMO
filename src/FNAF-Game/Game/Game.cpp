@@ -1,6 +1,5 @@
 #include "Game.h"
 #include "Game/GlobalObjects.h"
-#include "Objects/LightManager.h"
 
 void Game::Init()
 {
@@ -15,15 +14,17 @@ void Game::Init()
     Scene::gBunny.mStatus.active = false;
     Scene::EndTitleShow = false;
 
-    bool freddy_stop_flag = 0;
-    bool bunny_show_flag = 1;
-    int bunny_hold_count = 0;
-    int game_time_count = 0;
-
+    Scene::freddy_stop_flag = 0;
+    Scene::bunny_show_flag = 1;
+    Scene::bunny_hold_count = 0;
+    Scene::game_time_count = 0;
+    Scene::rate = 1.f;
+    Scene::gFreddy.mStatus.speed = Scene::freddy_ini_speed;
 }
 
 void Game::InitGameStart()
 {
+    JsonConfig::LoadConfig(R"(Configs\vr_ini_config.json)");
     LightManager::use_flash_light = false;
     Scene::is_game_over = false;
     Scene::game_result = false;
@@ -32,10 +33,12 @@ void Game::InitGameStart()
     Scene::gBunny.mStatus.active = true;
     Scene::EndTitleShow = false;
 
-    bool freddy_stop_flag = 0;
-    bool bunny_show_flag = 1;
-    int bunny_hold_count = 0;
-    int game_time_count = 0;
+    Scene::freddy_stop_flag = 0;
+    Scene::bunny_show_flag = 0;
+    Scene::bunny_hold_count = 0;
+    Scene::game_time_count = 0;
+    Scene::rate = 1.f;
+    Scene::gFreddy.mStatus.speed = Scene::freddy_ini_speed;
 }
 
 void Game::StartScene()
@@ -49,24 +52,15 @@ void Game::EndScene(float deltaTime)
 
 void Game::GeneraCase(float deltaTime)
 {
-    if ((Scene::gControllerState.squeezeClick_left || Scene::key_flash_light) && Scene::freddy_stop_flag == 0) {
-        Scene::freddy_stop_flag = 1;
-        Scene::gFreddy.mStatus.active = false;
-        if (Scene::gFreddy.mStatus.shock_level <= SHOCK_LEVEL_MAX) {
-            Scene::gFreddy.mStatus.shock_level++;
-            Scene::rate = (float)Scene::gFreddy.mStatus.shock_level / Scene::game_loop_config.speed_increase_rate;
-            Scene::gFreddy.mStatus.speed = Scene::freddy_ini_speed * (1.f + Scene::rate);
-        }
+    if ((Scene::gControllerState.squeezeClick_left || Scene::key_flash_light)) {
+        Scene::rate += Scene::bright_a * deltaTime;
         LightManager::use_flash_light = true;
-    } else if ((Scene::gControllerState.squeezeClick_left || Scene::key_flash_light) && Scene::freddy_stop_flag == 1) {
-        // do nothing
-    } else if ((!Scene::gControllerState.squeezeClick_left || !Scene::key_flash_light) && Scene::freddy_stop_flag == 1) {
-        Scene::freddy_stop_flag = 0;
-        Scene::gFreddy.mStatus.active = true;
-        LightManager::use_flash_light = false;
     } else {
-        Scene::gFreddy.Move(deltaTime, glm::vec3(0.f, 0.f, 1.f));
+        Scene::rate += Scene::dark_a * deltaTime;
+        LightManager::use_flash_light = false;
     }
+    Scene::gFreddy.mStatus.speed = Scene::freddy_ini_speed + Scene::rate;
+    Scene::gFreddy.Move(deltaTime, glm::vec3(0.f, 0.f, 1.f));
 
     if (Scene::gFreddy.mTranslation.z >= Scene::game_loop_config.freddy_death_distance) {
         Scene::is_game_over = true;
@@ -125,7 +119,7 @@ void Game::DeadCase(float deltaTime)
         static int dead_scene_count = 0;
         if ((Scene::gControllerState.squeezeClick_left || Scene::key_flash_light)) {
             dead_scene_count++;
-            if (dead_scene_count > 30) {
+            if (dead_scene_count > 60) {
                 dead_scene_count = 0;
                 Scene::is_game_over = false;
                 Scene::is_game_started = false;
@@ -134,6 +128,17 @@ void Game::DeadCase(float deltaTime)
             }
         } else {
             dead_scene_count = 0;
+        }
+
+        static int exit_count = 0;
+        if (Scene::gControllerState.squeezeClick_right) {
+            exit_count++;
+            if (exit_count > 30) {
+                exit_count = 0;
+                exit(0);
+            }
+        } else {
+            exit_count = 0;
         }
     }
     light_off_count++;
@@ -152,7 +157,7 @@ void Game::WinCase(float deltaTime)
     static int win_scene_count = 0;
     if ((Scene::gControllerState.squeezeClick_left || Scene::key_flash_light)) {
         win_scene_count++;
-        if (win_scene_count > 30) {
+        if (win_scene_count > 60) {
             win_scene_count = 0;
             win_sequence_restart = true;
             Scene::is_game_over = false;
@@ -169,10 +174,23 @@ void Game::WinCase(float deltaTime)
     } else {
         LightManager::LightSequenceSuccess(deltaTime);
     }
+
+    static int exit_count = 0;
+    if (Scene::gControllerState.squeezeClick_right) {
+        exit_count++;
+        if (exit_count > 30) {
+            exit_count = 0;
+            exit(0);
+        }
+    } else {
+        exit_count = 0;
+    }
 }
 
 void Game::UpdateDynamicStep(float deltaTime)
 {
+    Scene::camera->Move(deltaTime);
+
     static int start_scene_count = 0;
     if (!Scene::is_game_started) {
         StartScene();
@@ -182,7 +200,6 @@ void Game::UpdateDynamicStep(float deltaTime)
                 start_scene_count = 0;
                 Scene::is_game_started = true;
                 InitGameStart();
-                return;
             }
         } else {
             start_scene_count = 0;
@@ -196,6 +213,7 @@ void Game::UpdateDynamicStep(float deltaTime)
         } else {
             WinCase(deltaTime);
         }
+        return;
     } else {
         GeneraCase(deltaTime);
     }
@@ -206,10 +224,7 @@ void Game::UpdateDynamicStep(float deltaTime)
         Scene::game_time_count = 0;
         Scene::is_game_over = true;
         Scene::game_result = true;
-        return;
     }
-
-    Scene::camera->Move(deltaTime);
 }
 
 void Game::UpdateFixedStep()

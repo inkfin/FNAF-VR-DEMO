@@ -29,7 +29,7 @@ void Display(GLFWwindow* window)
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    static bool show_debug_window = true;
+    static bool show_debug_window = false;
     static bool show_capture_options = false;
     static bool show_imgui_test = false;
     static bool show_spotlight_manager = false;
@@ -122,6 +122,7 @@ void Display(GLFWwindow* window)
 //            ImGui::RadioButton("Debug", &mode, 2);
 //
 //            glUniform1i(SkinnedMesh::UniformLoc::Mode, mode);
+            ImGui::Text("Rate: <%.2f>", Scene::rate);
 
             ImGui::End();
         }
